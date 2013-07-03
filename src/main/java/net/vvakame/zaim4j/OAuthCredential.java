@@ -1,19 +1,27 @@
 package net.vvakame.zaim4j;
 
+import net.vvakame.util.jsonpullparser.annotation.JsonKey;
+import net.vvakame.util.jsonpullparser.annotation.JsonModel;
+
 /**
  * OAuth credential information about user.
  * @author vvakame
  */
+@JsonModel(genToPackagePrivate = true, treatUnknownKeyAsError = true)
 public class OAuthCredential {
 
 	OAuthConfiguration configuration;
 
+	@JsonKey
 	String requestToken;
 
+	@JsonKey
 	String requestTokenSecret;
 
+	@JsonKey
 	String oauthToken;
 
+	@JsonKey
 	String oauthTokenSecret;
 
 
@@ -166,5 +174,37 @@ public class OAuthCredential {
 	 */
 	public String getOauthTokenSecret() {
 		return oauthTokenSecret;
+	}
+
+	/**
+	 * @param requestToken the requestToken to set
+	 * @category accessor
+	 */
+	void setRequestToken(String requestToken) {
+		this.requestToken = requestToken;
+	}
+
+	/**
+	 * @param requestTokenSecret the requestTokenSecret to set
+	 * @category accessor
+	 */
+	void setRequestTokenSecret(String requestTokenSecret) {
+		this.requestTokenSecret = requestTokenSecret;
+	}
+
+	/**
+	 * @param oauthToken the oauthToken to set
+	 * @category accessor
+	 */
+	void setOauthToken(String oauthToken) {
+		this.oauthToken = oauthToken;
+	}
+
+	/**
+	 * @param oauthTokenSecret the oauthTokenSecret to set
+	 * @category accessor
+	 */
+	void setOauthTokenSecret(String oauthTokenSecret) {
+		this.oauthTokenSecret = oauthTokenSecret;
 	}
 }

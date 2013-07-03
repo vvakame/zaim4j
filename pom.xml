@@ -92,6 +92,15 @@
 		</snapshotRepository>
 	</distributionManagement>
 
+	<properties>
+		<jsonpullparser.version>1.6.2</jsonpullparser.version>
+		<jsonpullparser.debug>true</jsonpullparser.debug>
+		<jsonpullparser.genclass.postfix>Gen</jsonpullparser.genclass.postfix>
+
+		<generated.src>.apt_generated</generated.src>
+		<eclipse.lib>eclipse.lib</eclipse.lib>
+	</properties>
+
 	<repositories>
 		<repository>
 			<id>maven.seasar.org</id>
@@ -101,6 +110,18 @@
 	</repositories>
 
 	<dependencies>
+		<dependency>
+			<groupId>net.vvakame</groupId>
+			<artifactId>jsonpullparser-core</artifactId>
+			<version>${jsonpullparser.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>net.vvakame</groupId>
+			<artifactId>jsonpullparser-apt</artifactId>
+			<version>${jsonpullparser.version}</version>
+			<scope>provided</scope>
+		</dependency>
+
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
@@ -145,6 +166,63 @@
 		</pluginManagement>
 		<plugins>
 			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<version>1.4</version>
+				<executions>
+					<execution>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>add-source</goal>
+						</goals>
+						<configuration>
+							<sources>
+								<source>${generated.src}</source>
+							</sources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.0</version>
+				<configuration>
+					<encoding>utf-8</encoding>
+					<source>1.7</source>
+					<target>1.7</target>
+				</configuration>
+				<executions>
+					<execution>
+						<id>with-apt</id>
+						<phase>compile</phase>
+						<goals>
+							<goal>compile</goal>
+						</goals>
+						<configuration>
+							<generatedSourcesDirectory>${generated.src}</generatedSourcesDirectory>
+							<proc>only</proc>
+							<compilerArgument>-AJsonPullParserClassPostfix=${jsonpullparser.genclass.postfix}</compilerArgument>
+							<includes>
+								<include>**</include>
+							</includes>
+						</configuration>
+					</execution>
+					<execution>
+						<id>no-apt</id>
+						<phase>compile</phase>
+						<goals>
+							<goal>compile</goal>
+						</goals>
+						<configuration>
+							<proc>none</proc>
+							<includes>
+								<include>**</include>
+							</includes>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
 				<artifactId>maven-source-plugin</artifactId>
 				<version>2.2.1</version>
 				<executions>
@@ -178,16 +256,74 @@
 				</executions>
 			</plugin>
 			<plugin>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>copy-dependencies-for-jpp</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>copy-dependencies</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${eclipse.lib}</outputDirectory>
+							<includeArtifactIds>jsonpullparser-apt</includeArtifactIds>
+							<overWriteReleases>false</overWriteReleases>
+							<overWriteSnapshots>true</overWriteSnapshots>
+							<overWriteIfNewer>true</overWriteIfNewer>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-clean-plugin</artifactId>
+				<configuration>
+					<filesets>
+						<fileset>
+							<directory>${generated.src}</directory>
+							<includes>
+								<include>**/*.*</include>
+							</includes>
+						</fileset>
+					</filesets>
+				</configuration>
+			</plugin>
+			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-eclipse-plugin</artifactId>
 				<version>2.9</version>
 				<configuration>
 					<additionalConfig>
 						<file>
+							<name>.factorypath</name>
+							<content>
+                <![CDATA[
+<factorypath>
+    <factorypathentry kind="PLUGIN" id="org.eclipse.jst.ws.annotations.core" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="WKSPJAR" id="/${artifactId}/${eclipse.lib}/jsonpullparser-apt-${jsonpullparser.version}.jar" enabled="true" runInBatchMode="false"/>
+</factorypath>
+               ]]>
+							</content>
+						</file>
+						<file>
+							<name>.settings/org.eclipse.jdt.apt.core.prefs</name>
+							<content>
+                <![CDATA[
+eclipse.preferences.version=1
+org.eclipse.jdt.apt.aptEnabled=true
+org.eclipse.jdt.apt.genSrcDir=${generated.src}
+org.eclipse.jdt.apt.processorOptions/JsonPullParserClassPostfix=${jsonpullparser.genclass.postfix}
+org.eclipse.jdt.apt.processorOptions/JsonPullParserDebug=${jsonpullparser.debug}
+org.eclipse.jdt.apt.reconcileEnabled=false
+               ]]>
+							</content>
+						</file>
+						<file>
 							<name>.settings/org.eclipse.jdt.core.prefs</name>
 							<content>
                 <![CDATA[
 eclipse.preferences.version=1
+org.eclipse.jdt.core.compiler.processAnnotations=enabled
 org.eclipse.jdt.core.compiler.codegen.targetPlatform=1.7
 org.eclipse.jdt.core.compiler.source=1.7
 org.eclipse.jdt.core.compiler.compliance=1.7

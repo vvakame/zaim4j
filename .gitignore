@@ -1,8 +1,13 @@
+# for Eclipse
 .classpath
 .project
+.factorypath
+.apt_generated/
 .settings/
 
 target/
+eclipse.lib/
 
+# settings
 src/test/resources/zaim-oauth.properties
 
