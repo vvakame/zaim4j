@@ -1,7 +1,11 @@
 package net.vvakame.zaim4j;
 
+/**
+ * Base64 conversion.
+ * @author vvakame
+ */
 // from https://gist.github.com/dsiebel/898257
-public class Base64 {
+class Base64 {
 
 	private final static char[] ALPHABET =
 			"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/".toCharArray();
