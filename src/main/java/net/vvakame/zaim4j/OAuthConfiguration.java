@@ -1,5 +1,9 @@
 package net.vvakame.zaim4j;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
+
 /**
  * OAuth configuration for application.
  * @author vvakame
@@ -39,8 +43,46 @@ public class OAuthConfiguration {
 		 * @return new builder instance
 		 * @author vvakame
 		 */
-		public static Builder newBuild() {
+		public static Builder newBuilder() {
 			return new Builder();
+		}
+
+		/**
+		 * Create new {@link Builder} with load properties file.
+		 * @param name
+		 * @return settings loaded builder instance
+		 * @throws IOException
+		 * @author vvakame
+		 */
+		public static Builder fromProperties(String name) throws IOException {
+			InputStream is = OAuthConfiguration.class.getResourceAsStream(name);
+			Properties properties = new Properties();
+			properties.load(is);
+
+			Builder builder = newBuilder();
+			if (properties.containsKey("consumerKey")) {
+				builder.setConsumerKey(properties.getProperty("consumerKey"));
+			}
+			if (properties.containsKey("consumerSecret")) {
+				builder.setConsumerSecret(properties.getProperty("consumerSecret"));
+			}
+			if (properties.containsKey("baseUrl")) {
+				builder.setBaseUrl(properties.getProperty("baseUrl"));
+			}
+			if (properties.containsKey("requestTokenUrl")) {
+				builder.setRequestTokenUrl(properties.getProperty("requestTokenUrl"));
+			}
+			if (properties.containsKey("authorizeUrl")) {
+				builder.setAuthorizeUrl(properties.getProperty("authorizeUrl"));
+			}
+			if (properties.containsKey("accessTokenUrl")) {
+				builder.setAccessTokenUrl(properties.getProperty("accessTokenUrl"));
+			}
+			if (properties.containsKey("callbackUrl")) {
+				builder.setCallbackUrl(properties.getProperty("callbackUrl"));
+			}
+
+			return builder;
 		}
 
 		private Builder() {

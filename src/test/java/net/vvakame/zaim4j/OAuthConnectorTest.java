@@ -24,11 +24,8 @@ public class OAuthConnectorTest {
 	@Test
 	@Ignore("required manually operation")
 	public void test() throws IOException {
-		OAuthConfiguration.Builder builder = OAuthConfiguration.Builder.newBuild();
-		builder.setConsumerKey("13a6679e63189570c8a562ad9cc9511f17f363bb");
-		builder.setConsumerSecret("c77921594a416df396d43fd37c638bbf4f520324");
-		builder.setCallbackUrl("http://localhost:8888/callback");
-		OAuthConfiguration configuration = builder.build();
+		OAuthConfiguration configuration =
+				OAuthConfiguration.Builder.fromProperties("zaim-oauth.properties").build();
 
 		OAuthCredential credential = null;
 		OAuthConnector connector = new OAuthConnector(configuration, credential);
@@ -52,12 +49,10 @@ public class OAuthConnectorTest {
 	 * @author vvakame
 	 */
 	@Test
+	@Ignore("zaim-oauth.properties is not committed")
 	public void callAPI() throws IOException {
-		OAuthConfiguration.Builder builder = OAuthConfiguration.Builder.newBuild();
-		builder.setConsumerKey("13a6679e63189570c8a562ad9cc9511f17f363bb");
-		builder.setConsumerSecret("c77921594a416df396d43fd37c638bbf4f520324");
-		builder.setCallbackUrl("http://localhost:8888/callback");
-		OAuthConfiguration configuration = builder.build();
+		OAuthConfiguration configuration =
+				OAuthConfiguration.Builder.fromProperties("zaim-oauth.properties").build();
 
 		OAuthCredential credential = OAuthCredential.Builder.newBuild(configuration).build();
 		credential.oauthToken =

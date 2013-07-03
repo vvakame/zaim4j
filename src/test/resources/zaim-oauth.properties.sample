@@ -1,0 +1,3 @@
+consumerKey=XXXXX
+consumerSecret=YYYYY
+callbackUrl=http://localhost:8888/callback
