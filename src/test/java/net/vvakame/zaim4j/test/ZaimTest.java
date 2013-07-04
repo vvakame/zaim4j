@@ -40,6 +40,7 @@ import static org.junit.Assert.*;
  * Test for {@link Zaim}.
  * @author vvakame
  */
+@Ignore
 public class ZaimTest {
 
 	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
