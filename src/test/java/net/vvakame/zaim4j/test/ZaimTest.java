@@ -54,6 +54,7 @@ public class ZaimTest {
 	 * @author vvakame
 	 */
 	@Test
+	@Ignore
 	public void user_verify() throws IOException, JsonFormatException {
 		Zaim zaim = getZaimInstance();
 
@@ -89,6 +90,7 @@ public class ZaimTest {
 	 * @author vvakame
 	 */
 	@Test
+	@Ignore
 	public void money_list() throws IOException, JsonFormatException {
 		Zaim zaim = getZaimInstance();
 
@@ -399,6 +401,7 @@ public class ZaimTest {
 	 * @author vvakame
 	 */
 	@Test
+	@Ignore
 	public void category_list() throws IOException, JsonFormatException {
 		Zaim zaim = getZaimInstance();
 
@@ -432,6 +435,7 @@ public class ZaimTest {
 	 * @author vvakame
 	 */
 	@Test
+	@Ignore
 	public void genre_list() throws IOException, JsonFormatException {
 		Zaim zaim = getZaimInstance();
 
@@ -465,6 +469,7 @@ public class ZaimTest {
 	 * @author vvakame
 	 */
 	@Test
+	@Ignore
 	public void account_list() throws IOException, JsonFormatException {
 		Zaim zaim = getZaimInstance();
 
@@ -498,6 +503,7 @@ public class ZaimTest {
 	 * @author vvakame
 	 */
 	@Test
+	@Ignore
 	public void other_account_list() throws IOException, JsonFormatException {
 		Zaim zaim = getZaimInstance();
 
@@ -531,6 +537,7 @@ public class ZaimTest {
 	 * @author vvakame
 	 */
 	@Test
+	@Ignore
 	public void other_category_list() throws IOException, JsonFormatException {
 		Zaim zaim = getZaimInstance();
 
@@ -564,6 +571,7 @@ public class ZaimTest {
 	 * @author vvakame
 	 */
 	@Test
+	@Ignore
 	public void other_genre_list() throws IOException, JsonFormatException {
 		Zaim zaim = getZaimInstance();
 
@@ -597,6 +605,7 @@ public class ZaimTest {
 	 * @author vvakame
 	 */
 	@Test
+	@Ignore
 	public void other_currency_list() throws IOException, JsonFormatException {
 		Zaim zaim = getZaimInstance();
 
