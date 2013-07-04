@@ -313,6 +313,9 @@ public class Zaim {
 		 */
 		public class Payment {
 
+			static final String API_URL = "/v2/home/money/payment";
+
+
 			private Payment() {
 			}
 
@@ -335,7 +338,7 @@ public class Zaim {
 				}
 
 				/**
-				 * Get money list api.
+				 * Money payment insert api.
 				 * @param listener
 				 * @author vvakame
 				 */
@@ -364,8 +367,7 @@ public class Zaim {
 						params.put("place", arg.getPlace());
 					}
 
-					HttpURLConnection connection =
-							connector.doPost("/v2/home/money/payment", params);
+					HttpURLConnection connection = connector.doPost(API_URL, params);
 
 					doCallback(connection, listener,
 							new ResponseConverter<MoneyPostInsertResponse>() {
@@ -390,6 +392,131 @@ public class Zaim {
 			public Insert insert(MoneyPaymentInsertArgument arg) {
 				return new Insert(arg);
 			}
+
+
+			/**
+			 * Money payment update api.
+			 * @author vvakame
+			 */
+			public class Update {
+
+				MoneyUpdateArgument arg;
+
+
+				private Update(MoneyUpdateArgument arg) {
+					if (arg == null) {
+						throw new NullPointerException("argment is reqruired.");
+					} else {
+						this.arg = arg;
+					}
+				}
+
+				/**
+				 * Get money list api.
+				 * @param listener
+				 * @author vvakame
+				 */
+				public void execute(ZaimListener<MoneyModifiedResponse> listener) {
+					if (listener == null) {
+						throw new NullPointerException("listener is required");
+					}
+
+					Map<String, String> params = new HashMap<String, String>();
+					// required
+					params.put("amount", String.valueOf(arg.getAmount()));
+					params.put("date", arg.getDate());
+					// optional
+					if (arg.getFromAccountId() != null) {
+						params.put("from_account_id", String.valueOf(arg.getFromAccountId()));
+					}
+					if (arg.getToAccountId() != null) {
+						params.put("to_account_id", String.valueOf(arg.getToAccountId()));
+					}
+					if (arg.getGenre() != null) {
+						params.put("genre", String.valueOf(arg.getGenre()));
+					}
+					if (arg.getCategoryId() != null) {
+						params.put("category_id", String.valueOf(arg.getCategoryId()));
+					}
+					if (arg.getComment() != null) {
+						params.put("comment", arg.getComment());
+					}
+
+					HttpURLConnection connection =
+							connector.doPut(API_URL + "/" + arg.getId(), params);
+
+					doCallback(connection, listener,
+							new ResponseConverter<MoneyModifiedResponse>() {
+
+								@Override
+								public MoneyModifiedResponse convert(InputStream is)
+										throws IOException, JsonFormatException {
+									return MoneyModifiedResponseGen.get(is);
+								}
+							});
+				}
+
+			}
+
+
+			/**
+			* Money payment update api.
+			* @param arg
+			* @return insert api
+			* @author vvakame
+			*/
+			public Update update(MoneyUpdateArgument arg) {
+				return new Update(arg);
+			}
+
+
+			/**
+			 * Money payment delete api.
+			 * @author vvakame
+			 */
+			public class Delete {
+
+				long id;
+
+
+				private Delete(long id) {
+					this.id = id;
+				}
+
+				/**
+				 * Get money list api.
+				 * @param listener
+				 * @author vvakame
+				 */
+				public void execute(ZaimListener<MoneyModifiedResponse> listener) {
+					if (listener == null) {
+						throw new NullPointerException("listener is required");
+					}
+
+					HttpURLConnection connection = connector.doDelete(API_URL + "/" + id, null);
+
+					doCallback(connection, listener,
+							new ResponseConverter<MoneyModifiedResponse>() {
+
+								@Override
+								public MoneyModifiedResponse convert(InputStream is)
+										throws IOException, JsonFormatException {
+									return MoneyModifiedResponseGen.get(is);
+								}
+							});
+				}
+			}
+
+
+			/**
+			* Money payment delete api.
+			* @param id 
+			* @return insert api
+			* @author vvakame
+			*/
+			public Delete delete(long id) {
+				return new Delete(id);
+			}
 		}
 
 
@@ -408,6 +535,9 @@ public class Zaim {
 		 * @author vvakame
 		 */
 		public class Income {
+
+			static final String API_URL = "/v2/home/money/income";
+
 
 			private Income() {
 			}
@@ -453,8 +583,7 @@ public class Zaim {
 						params.put("comment", arg.getComment());
 					}
 
-					HttpURLConnection connection =
-							connector.doPost("/v2/home/money/income", params);
+					HttpURLConnection connection = connector.doPost(API_URL, params);
 
 					doCallback(connection, listener,
 							new ResponseConverter<MoneyPostInsertResponse>() {
@@ -479,6 +608,129 @@ public class Zaim {
 				return new Insert(arg);
 			}
 
+
+			/**
+			 * Money income update api.
+			 * @author vvakame
+			 */
+			public class Update {
+
+				MoneyUpdateArgument arg;
+
+
+				private Update(MoneyUpdateArgument arg) {
+					if (arg == null) {
+						throw new NullPointerException("argment is reqruired.");
+					} else {
+						this.arg = arg;
+					}
+				}
+
+				/**
+				 * Update income api.
+				 * @param listener
+				 * @author vvakame
+				 */
+				public void execute(ZaimListener<MoneyModifiedResponse> listener) {
+					if (listener == null) {
+						throw new NullPointerException("listener is required");
+					}
+
+					Map<String, String> params = new HashMap<String, String>();
+					// required
+					params.put("amount", String.valueOf(arg.getAmount()));
+					params.put("date", arg.getDate());
+					// optional
+					if (arg.getFromAccountId() != null) {
+						params.put("from_account_id", String.valueOf(arg.getFromAccountId()));
+					}
+					if (arg.getToAccountId() != null) {
+						params.put("to_account_id", String.valueOf(arg.getToAccountId()));
+					}
+					if (arg.getGenre() != null) {
+						params.put("genre", String.valueOf(arg.getGenre()));
+					}
+					if (arg.getCategoryId() != null) {
+						params.put("category_id", String.valueOf(arg.getCategoryId()));
+					}
+					if (arg.getComment() != null) {
+						params.put("comment", arg.getComment());
+					}
+
+					HttpURLConnection connection =
+							connector.doPut(API_URL + "/" + arg.getId(), params);
+
+					doCallback(connection, listener,
+							new ResponseConverter<MoneyModifiedResponse>() {
+
+								@Override
+								public MoneyModifiedResponse convert(InputStream is)
+										throws IOException, JsonFormatException {
+									return MoneyModifiedResponseGen.get(is);
+								}
+							});
+				}
+			}
+
+
+			/**
+			* Money income update api.
+			* @param arg
+			* @return insert api
+			* @author vvakame
+			*/
+			public Update update(MoneyUpdateArgument arg) {
+				return new Update(arg);
+			}
+
+
+			/**
+			 * Money income delete api.
+			 * @author vvakame
+			 */
+			public class Delete {
+
+				long id;
+
+
+				private Delete(long id) {
+					this.id = id;
+				}
+
+				/**
+				 * Delete income api.
+				 * @param listener
+				 * @author vvakame
+				 */
+				public void execute(ZaimListener<MoneyModifiedResponse> listener) {
+					if (listener == null) {
+						throw new NullPointerException("listener is required");
+					}
+
+					HttpURLConnection connection = connector.doDelete(API_URL + "/" + id, null);
+
+					doCallback(connection, listener,
+							new ResponseConverter<MoneyModifiedResponse>() {
+
+								@Override
+								public MoneyModifiedResponse convert(InputStream is)
+										throws IOException, JsonFormatException {
+									return MoneyModifiedResponseGen.get(is);
+								}
+							});
+				}
+			}
+
+
+			/**
+			* Money payment delete api.
+			* @param id 
+			* @return insert api
+			* @author vvakame
+			*/
+			public Delete delete(long id) {
+				return new Delete(id);
+			}
 		}
 
 
@@ -497,6 +749,9 @@ public class Zaim {
 		 * @author vvakame
 		 */
 		public class Transfer {
+
+			static final String API_URL = "/v2/home/money/transfer";
+
 
 			private Transfer() {
 			}
@@ -520,7 +775,7 @@ public class Zaim {
 				}
 
 				/**
-				 * Get money list api.
+				 * Money transfer insert api.
 				 * @param listener
 				 * @author vvakame
 				 */
@@ -540,8 +795,7 @@ public class Zaim {
 						params.put("comment", arg.getComment());
 					}
 
-					HttpURLConnection connection =
-							connector.doPost("/v2/home/money/transfer", params);
+					HttpURLConnection connection = connector.doPost(API_URL, params);
 
 					doCallback(connection, listener,
 							new ResponseConverter<MoneyPostInsertResponse>() {
@@ -565,6 +819,130 @@ public class Zaim {
 			public Insert insert(MoneyTransferInsertArgument arg) {
 				return new Insert(arg);
 			}
+
+
+			/**
+			 * Money transfer update api.
+			 * @author vvakame
+			 */
+			public class Update {
+
+				MoneyUpdateArgument arg;
+
+
+				private Update(MoneyUpdateArgument arg) {
+					if (arg == null) {
+						throw new NullPointerException("argment is reqruired.");
+					} else {
+						this.arg = arg;
+					}
+				}
+
+				/**
+				 * Update transfer api.
+				 * @param listener
+				 * @author vvakame
+				 */
+				public void execute(ZaimListener<MoneyModifiedResponse> listener) {
+					if (listener == null) {
+						throw new NullPointerException("listener is required");
+					}
+
+					Map<String, String> params = new HashMap<String, String>();
+					// required
+					params.put("amount", String.valueOf(arg.getAmount()));
+					params.put("date", arg.getDate());
+					// optional
+					if (arg.getFromAccountId() != null) {
+						params.put("from_account_id", String.valueOf(arg.getFromAccountId()));
+					}
+					if (arg.getToAccountId() != null) {
+						params.put("to_account_id", String.valueOf(arg.getToAccountId()));
+					}
+					if (arg.getGenre() != null) {
+						params.put("genre", String.valueOf(arg.getGenre()));
+					}
+					if (arg.getCategoryId() != null) {
+						params.put("category_id", String.valueOf(arg.getCategoryId()));
+					}
+					if (arg.getComment() != null) {
+						params.put("comment", arg.getComment());
+					}
+
+					HttpURLConnection connection =
+							connector.doPut(API_URL + "/" + arg.getId(), params);
+
+					doCallback(connection, listener,
+							new ResponseConverter<MoneyModifiedResponse>() {
+
+								@Override
+								public MoneyModifiedResponse convert(InputStream is)
+										throws IOException, JsonFormatException {
+									return MoneyModifiedResponseGen.get(is);
+								}
+							});
+				}
+			}
+
+
+			/**
+			* Money transfer update api.
+			* @param arg
+			* @return transfer api
+			* @author vvakame
+			*/
+			public Update update(MoneyUpdateArgument arg) {
+				return new Update(arg);
+			}
+
+
+			/**
+			 * Money transfer delete api.
+			 * @author vvakame
+			 */
+			public class Delete {
+
+				long id;
+
+
+				private Delete(long id) {
+					this.id = id;
+				}
+
+				/**
+				 * Delete transfer api.
+				 * @param listener
+				 * @author vvakame
+				 */
+				public void execute(ZaimListener<MoneyModifiedResponse> listener) {
+					if (listener == null) {
+						throw new NullPointerException("listener is required");
+					}
+
+					HttpURLConnection connection = connector.doDelete(API_URL + "/" + id, null);
+
+					doCallback(connection, listener,
+							new ResponseConverter<MoneyModifiedResponse>() {
+
+								@Override
+								public MoneyModifiedResponse convert(InputStream is)
+										throws IOException, JsonFormatException {
+									return MoneyModifiedResponseGen.get(is);
+								}
+							});
+				}
+			}
+
+
+			/**
+			* Money transfer delete api.
+			* @param id 
+			* @return transfer api
+			* @author vvakame
+			*/
+			public Delete delete(long id) {
+				return new Delete(id);
+			}
 		}
 
 
@@ -576,9 +954,6 @@ public class Zaim {
 		public Transfer transfer() {
 			return new Transfer();
 		}
-
-		// TODO PUT /v2/home/money/:id
-		// TODO DELETE /v2/home/money/:id
 	}
 
 	/**

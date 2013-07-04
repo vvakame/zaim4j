@@ -4,14 +4,18 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import net.vvakame.util.jsonpullparser.JsonFormatException;
 import net.vvakame.zaim4j.ErrorResponse;
 import net.vvakame.zaim4j.MoneyIncomeInsertArgument;
 import net.vvakame.zaim4j.MoneyListResponse;
+import net.vvakame.zaim4j.MoneyModifiedResponse;
 import net.vvakame.zaim4j.MoneyPaymentInsertArgument;
 import net.vvakame.zaim4j.MoneyPostInsertResponse;
 import net.vvakame.zaim4j.MoneyTransferInsertArgument;
+import net.vvakame.zaim4j.MoneyUpdateArgument;
 import net.vvakame.zaim4j.OAuthConfiguration;
 import net.vvakame.zaim4j.OAuthCredential;
 import net.vvakame.zaim4j.UserVerifyResponse;
@@ -31,6 +35,11 @@ import static org.junit.Assert.*;
  */
 public class ZaimTest {
 
+	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+
+	String date = sdf.format(new Date(new Date().getTime() + 5 * 24 * 60 * 60 * 1000));
+
+
 	/**
 	 * Test for {@link net.vvakame.zaim4j.Zaim.User.Verify#execute(ZaimListener)}.
 	 * @throws IOException
@@ -41,15 +50,15 @@ public class ZaimTest {
 	public void user_verify() throws IOException, JsonFormatException {
 		Zaim zaim = getZaimInstance();
 
+		final Holder<UserVerifyResponse> holder = new Holder<UserVerifyResponse>();
 		{
-			final Checker checker = new Checker();
 			zaim.user().verify().execute(new ZaimListener<UserVerifyResponse>() {
 
 				@Override
 				public void onSuccess(UserVerifyResponse success) {
 					assertThat(success.getRequested(), not(0L));
 					assertThat(success.getMe(), notNullValue());
-					checker.ok();
+					holder.ok(success);
 				}
 
 				@Override
@@ -62,7 +71,7 @@ public class ZaimTest {
 					throw new RuntimeException(e);
 				}
 			});
-			assertThat(checker.isOk(), is(true));
+			assertThat(holder.getObject(), notNullValue());
 		}
 	}
 
@@ -76,90 +85,14 @@ public class ZaimTest {
 	public void money_list() throws IOException, JsonFormatException {
 		Zaim zaim = getZaimInstance();
 
-		{
-			final Checker checker = new Checker();
-			zaim.money().list().execute(new ZaimListener<MoneyListResponse>() {
-
-				@Override
-				public void onSuccess(MoneyListResponse success) {
-					assertThat(success.getRequested(), not(0L));
-					assertThat(success.getMoney().size(), not(0));
-					checker.ok();
-				}
-
-				@Override
-				public void onFailure(ErrorResponse failure) {
-					fail(failure.getMessage());
-				}
-
-				@Override
-				public void onError(Exception e) {
-					throw new RuntimeException(e);
-				}
-			});
-			assertThat(checker.isOk(), is(true));
-		}
-	}
-
-	/**
-	 * Test for {@link net.vvakame.zaim4j.Zaim.Money.Payment.Insert#execute(ZaimListener)}.
-	 * @throws IOException
-	 * @throws JsonFormatException
-	 * @author vvakame
-	 */
-	@Test
-	@Ignore("this test create actual data...")
-	public void money_payment_insert() throws IOException, JsonFormatException {
-		Zaim zaim = getZaimInstance();
-
-		final Checker checker = new Checker();
-		MoneyPaymentInsertArgument argument =
-				new MoneyPaymentInsertArgument(101, 10103, 888, "2013-7-7");
-		zaim.money().payment().insert(argument)
-			.execute(new ZaimListener<MoneyPostInsertResponse>() {
-
-				@Override
-				public void onSuccess(MoneyPostInsertResponse success) {
-					assertThat(success.getRequested(), not(0L));
-					assertThat(success.getMoney(), notNullValue());
-					assertThat(success.getUser(), notNullValue());
-					checker.ok();
-				}
-
-				@Override
-				public void onFailure(ErrorResponse failure) {
-					fail(failure.getMessage());
-				}
-
-				@Override
-				public void onError(Exception e) {
-					throw new RuntimeException(e);
-				}
-			});
-		assertThat(checker.isOk(), is(true));
-	}
-
-	/**
-	 * Test for {@link net.vvakame.zaim4j.Zaim.Money.Income.Insert#execute(ZaimListener)}.
-	 * @throws IOException
-	 * @throws JsonFormatException
-	 * @author vvakame
-	 */
-	@Test
-	@Ignore("this test create actual data...")
-	public void money_income_insert() throws IOException, JsonFormatException {
-		Zaim zaim = getZaimInstance();
-
-		final Checker checker = new Checker();
-		MoneyIncomeInsertArgument argument = new MoneyIncomeInsertArgument(11, 999, "2013-07-07");
-		zaim.money().income().insert(argument).execute(new ZaimListener<MoneyPostInsertResponse>() {
+		final Holder<MoneyListResponse> holder = new Holder<MoneyListResponse>();
+		zaim.money().list().execute(new ZaimListener<MoneyListResponse>() {
 
 			@Override
-			public void onSuccess(MoneyPostInsertResponse success) {
+			public void onSuccess(MoneyListResponse success) {
 				assertThat(success.getRequested(), not(0L));
-				assertThat(success.getMoney(), notNullValue());
-				assertThat(success.getUser(), notNullValue());
-				checker.ok();
+				assertThat(success.getMoney().size(), not(0));
+				holder.ok(success);
 			}
 
 			@Override
@@ -172,7 +105,192 @@ public class ZaimTest {
 				throw new RuntimeException(e);
 			}
 		});
-		assertThat(checker.isOk(), is(true));
+		assertThat(holder.getObject(), notNullValue());
+	}
+
+	/**
+	 * Test for {@link net.vvakame.zaim4j.Zaim.Money.Payment.Insert#execute(ZaimListener)}.
+	 * @throws IOException
+	 * @throws JsonFormatException
+	 * @author vvakame
+	 */
+	@Test
+	@Ignore("this test create actual data...")
+	public void money_payment() throws IOException, JsonFormatException {
+		Zaim zaim = getZaimInstance();
+
+		final long moneyId;
+		{ // insert
+			final Holder<MoneyPostInsertResponse> holder = new Holder<MoneyPostInsertResponse>();
+			MoneyPaymentInsertArgument argument =
+					new MoneyPaymentInsertArgument(101, 10103, 888, date);
+			zaim.money().payment().insert(argument)
+				.execute(new ZaimListener<MoneyPostInsertResponse>() {
+
+					@Override
+					public void onSuccess(MoneyPostInsertResponse success) {
+						assertThat(success.getRequested(), not(0L));
+						assertThat(success.getMoney(), notNullValue());
+						assertThat(success.getUser(), notNullValue());
+						holder.ok(success);
+					}
+
+					@Override
+					public void onFailure(ErrorResponse failure) {
+						fail(failure.getMessage());
+					}
+
+					@Override
+					public void onError(Exception e) {
+						throw new RuntimeException(e);
+					}
+				});
+			assertThat(holder.getObject(), notNullValue());
+			moneyId = holder.getObject().getMoney().getId();
+		}
+		{ // update
+			final Holder<MoneyModifiedResponse> holder = new Holder<MoneyModifiedResponse>();
+			MoneyUpdateArgument argument = new MoneyUpdateArgument(moneyId, 333, date);
+			zaim.money().payment().update(argument)
+				.execute(new ZaimListener<MoneyModifiedResponse>() {
+
+					@Override
+					public void onSuccess(MoneyModifiedResponse success) {
+						assertThat(success.getRequested(), not(0L));
+						assertThat(success.getMoney(), notNullValue());
+						assertThat(success.getUser(), notNullValue());
+						holder.ok(success);
+					}
+
+					@Override
+					public void onFailure(ErrorResponse failure) {
+						fail(failure.getMessage());
+					}
+
+					@Override
+					public void onError(Exception e) {
+						throw new RuntimeException(e);
+					}
+				});
+			assertThat(holder.getObject(), notNullValue());
+		}
+		{ // delete
+			final Holder<MoneyModifiedResponse> holder = new Holder<MoneyModifiedResponse>();
+			zaim.money().payment().delete(moneyId)
+				.execute(new ZaimListener<MoneyModifiedResponse>() {
+
+					@Override
+					public void onSuccess(MoneyModifiedResponse success) {
+						assertThat(success.getRequested(), not(0L));
+						assertThat(success.getMoney(), notNullValue());
+						assertThat(success.getUser(), notNullValue());
+						holder.ok(success);
+					}
+
+					@Override
+					public void onFailure(ErrorResponse failure) {
+						fail(failure.getMessage());
+					}
+
+					@Override
+					public void onError(Exception e) {
+						throw new RuntimeException(e);
+					}
+				});
+			assertThat(holder.getObject(), notNullValue());
+		}
+	}
+
+	/**
+	 * Test for {@link net.vvakame.zaim4j.Zaim.Money.Income.Insert#execute(ZaimListener)}.
+	 * @throws IOException
+	 * @throws JsonFormatException
+	 * @author vvakame
+	 */
+	@Test
+	@Ignore("this test create actual data...")
+	public void money_income() throws IOException, JsonFormatException {
+		Zaim zaim = getZaimInstance();
+
+		final long moneyId;
+		{
+			final Holder<MoneyPostInsertResponse> holder = new Holder<MoneyPostInsertResponse>();
+			MoneyIncomeInsertArgument argument = new MoneyIncomeInsertArgument(11, 999, date);
+			zaim.money().income().insert(argument)
+				.execute(new ZaimListener<MoneyPostInsertResponse>() {
+
+					@Override
+					public void onSuccess(MoneyPostInsertResponse success) {
+						assertThat(success.getRequested(), not(0L));
+						assertThat(success.getMoney(), notNullValue());
+						assertThat(success.getUser(), notNullValue());
+						holder.ok(success);
+					}
+
+					@Override
+					public void onFailure(ErrorResponse failure) {
+						fail(failure.getMessage());
+					}
+
+					@Override
+					public void onError(Exception e) {
+						throw new RuntimeException(e);
+					}
+				});
+			assertThat(holder.getObject(), notNullValue());
+			moneyId = holder.getObject().getMoney().getId();
+		}
+		{ // update
+			final Holder<MoneyModifiedResponse> holder = new Holder<MoneyModifiedResponse>();
+			MoneyUpdateArgument argument = new MoneyUpdateArgument(moneyId, 333, date);
+			zaim.money().income().update(argument)
+				.execute(new ZaimListener<MoneyModifiedResponse>() {
+
+					@Override
+					public void onSuccess(MoneyModifiedResponse success) {
+						assertThat(success.getRequested(), not(0L));
+						assertThat(success.getMoney(), notNullValue());
+						assertThat(success.getUser(), notNullValue());
+						holder.ok(success);
+					}
+
+					@Override
+					public void onFailure(ErrorResponse failure) {
+						fail(failure.getMessage());
+					}
+
+					@Override
+					public void onError(Exception e) {
+						throw new RuntimeException(e);
+					}
+				});
+			assertThat(holder.getObject(), notNullValue());
+		}
+		{ // delete
+			final Holder<MoneyModifiedResponse> holder = new Holder<MoneyModifiedResponse>();
+			zaim.money().income().delete(moneyId)
+				.execute(new ZaimListener<MoneyModifiedResponse>() {
+
+					@Override
+					public void onSuccess(MoneyModifiedResponse success) {
+						assertThat(success.getRequested(), not(0L));
+						assertThat(success.getMoney(), notNullValue());
+						assertThat(success.getUser(), notNullValue());
+						holder.ok(success);
+					}
+
+					@Override
+					public void onFailure(ErrorResponse failure) {
+						fail(failure.getMessage());
+					}
+
+					@Override
+					public void onError(Exception e) {
+						throw new RuntimeException(e);
+					}
+				});
+			assertThat(holder.getObject(), notNullValue());
+		}
 	}
 
 	/**
@@ -186,31 +304,85 @@ public class ZaimTest {
 	public void money_transfer_insert() throws IOException, JsonFormatException {
 		Zaim zaim = getZaimInstance();
 
-		final Checker checker = new Checker();
-		MoneyTransferInsertArgument argument =
-				new MoneyTransferInsertArgument(999, "2013-07-07", 1, 2);
-		zaim.money().transfer().insert(argument)
-			.execute(new ZaimListener<MoneyPostInsertResponse>() {
+		final long moneyId;
+		{ // insert
+			final Holder<MoneyPostInsertResponse> holder = new Holder<MoneyPostInsertResponse>();
+			MoneyTransferInsertArgument argument = new MoneyTransferInsertArgument(999, date, 1, 2);
+			zaim.money().transfer().insert(argument)
+				.execute(new ZaimListener<MoneyPostInsertResponse>() {
 
-				@Override
-				public void onSuccess(MoneyPostInsertResponse success) {
-					assertThat(success.getRequested(), not(0L));
-					assertThat(success.getMoney(), notNullValue());
-					assertThat(success.getUser(), notNullValue());
-					checker.ok();
-				}
+					@Override
+					public void onSuccess(MoneyPostInsertResponse success) {
+						assertThat(success.getRequested(), not(0L));
+						assertThat(success.getMoney(), notNullValue());
+						assertThat(success.getUser(), notNullValue());
+						holder.ok(success);
+					}
 
-				@Override
-				public void onFailure(ErrorResponse failure) {
-					fail(failure.getMessage());
-				}
+					@Override
+					public void onFailure(ErrorResponse failure) {
+						fail(failure.getMessage());
+					}
 
-				@Override
-				public void onError(Exception e) {
-					throw new RuntimeException(e);
-				}
-			});
-		assertThat(checker.isOk(), is(true));
+					@Override
+					public void onError(Exception e) {
+						throw new RuntimeException(e);
+					}
+				});
+			assertThat(holder.getObject(), notNullValue());
+			moneyId = holder.getObject().getMoney().getId();
+		}
+		{ // update
+			final Holder<MoneyModifiedResponse> holder = new Holder<MoneyModifiedResponse>();
+			MoneyUpdateArgument argument = new MoneyUpdateArgument(moneyId, 333, date);
+			zaim.money().transfer().update(argument)
+				.execute(new ZaimListener<MoneyModifiedResponse>() {
+
+					@Override
+					public void onSuccess(MoneyModifiedResponse success) {
+						assertThat(success.getRequested(), not(0L));
+						assertThat(success.getMoney(), notNullValue());
+						assertThat(success.getUser(), notNullValue());
+						holder.ok(success);
+					}
+
+					@Override
+					public void onFailure(ErrorResponse failure) {
+						fail(failure.getMessage());
+					}
+
+					@Override
+					public void onError(Exception e) {
+						throw new RuntimeException(e);
+					}
+				});
+			assertThat(holder.getObject(), notNullValue());
+		}
+		{ // delete
+			final Holder<MoneyModifiedResponse> holder = new Holder<MoneyModifiedResponse>();
+			zaim.money().transfer().delete(moneyId)
+				.execute(new ZaimListener<MoneyModifiedResponse>() {
+
+					@Override
+					public void onSuccess(MoneyModifiedResponse success) {
+						assertThat(success.getRequested(), not(0L));
+						assertThat(success.getMoney(), notNullValue());
+						assertThat(success.getUser(), notNullValue());
+						holder.ok(success);
+					}
+
+					@Override
+					public void onFailure(ErrorResponse failure) {
+						fail(failure.getMessage());
+					}
+
+					@Override
+					public void onError(Exception e) {
+						throw new RuntimeException(e);
+					}
+				});
+			assertThat(holder.getObject(), notNullValue());
+		}
 	}
 
 	Zaim getZaimInstance() throws IOException, JsonFormatException {
@@ -224,17 +396,17 @@ public class ZaimTest {
 	}
 
 
-	static class Checker {
+	static class Holder<T> {
 
-		private boolean ok = false;
+		private T obj;
 
 
-		public void ok() {
-			ok = true;
+		public void ok(T obj) {
+			this.obj = obj;
 		}
 
-		public boolean isOk() {
-			return ok;
+		public T getObject() {
+			return obj;
 		}
 	}
 

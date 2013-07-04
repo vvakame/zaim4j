@@ -24,7 +24,7 @@ public enum MoneyMode {
 
 	static class MoneyModeConverter extends TokenConverter<MoneyMode> {
 
-		static MoneyModeConverter getInstance() {
+		public static MoneyModeConverter getInstance() {
 			return new MoneyModeConverter();
 		}
 

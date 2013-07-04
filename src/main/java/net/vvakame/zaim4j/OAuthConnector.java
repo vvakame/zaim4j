@@ -133,6 +133,17 @@ class OAuthConnector {
 		return exec(ProcessType.ApiAccess, "PUT", url, authParams, params);
 	}
 
+	public HttpURLConnection doDelete(String url, Map<String, String> params) {
+		Map<String, String> authParams = new HashMap<String, String>();
+		authParams.put("oauth_token", credential.getOauthToken());
+		if (url.startsWith("/")) {
+			url = configuration.getBaseUrl() + url.substring(1);
+		} else {
+			url = configuration.getBaseUrl() + url;
+		}
+		return exec(ProcessType.ApiAccess, "DELETE", url, authParams, params);
+	}
+
 	public OAuthCredential getRequestToken() throws IOException {
 		SortedMap<String, String> params = new TreeMap<String, String>();
 		params.put("oauth_callback", configuration.getCallbackUrl());
