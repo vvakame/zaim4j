@@ -8,6 +8,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import net.vvakame.util.jsonpullparser.JsonFormatException;
+import net.vvakame.zaim4j.AccountListResponse;
 import net.vvakame.zaim4j.CategoryListResponse;
 import net.vvakame.zaim4j.ErrorResponse;
 import net.vvakame.zaim4j.GenreListResponse;
@@ -437,6 +438,39 @@ public class ZaimTest {
 			public void onSuccess(GenreListResponse success) {
 				assertThat(success.getRequested(), not(0L));
 				assertThat(success.getGenres().size(), not(0));
+				holder.ok(success);
+			}
+
+			@Override
+			public void onFailure(ErrorResponse failure) {
+				fail(failure.getMessage());
+			}
+
+			@Override
+			public void onError(Exception e) {
+				throw new RuntimeException(e);
+			}
+		});
+		assertThat(holder.getObject(), notNullValue());
+	}
+
+	/**
+	 * Test for {@link net.vvakame.zaim4j.Zaim.Account.List#execute(ZaimListener)}.
+	 * @throws IOException
+	 * @throws JsonFormatException
+	 * @author vvakame
+	 */
+	@Test
+	public void account_list() throws IOException, JsonFormatException {
+		Zaim zaim = getZaimInstance();
+
+		final Holder<AccountListResponse> holder = new Holder<AccountListResponse>();
+		zaim.account().list().execute(new ZaimListener<AccountListResponse>() {
+
+			@Override
+			public void onSuccess(AccountListResponse success) {
+				assertThat(success.getRequested(), not(0L));
+				assertThat(success.getAccounts().size(), not(0));
 				holder.ok(success);
 			}
 

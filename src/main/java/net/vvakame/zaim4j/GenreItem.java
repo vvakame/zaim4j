@@ -17,9 +17,6 @@ public class GenreItem {
 	String name;
 
 	@JsonKey
-	MoneyMode mode;
-
-	@JsonKey
 	long sort;
 
 	@JsonKey
@@ -68,22 +65,6 @@ public class GenreItem {
 	 */
 	public void setName(String name) {
 		this.name = name;
-	}
-
-	/**
-	 * @return the mode
-	 * @category accessor
-	 */
-	public MoneyMode getMode() {
-		return mode;
-	}
-
-	/**
-	 * @param mode the mode to set
-	 * @category accessor
-	 */
-	public void setMode(MoneyMode mode) {
-		this.mode = mode;
 	}
 
 	/**
