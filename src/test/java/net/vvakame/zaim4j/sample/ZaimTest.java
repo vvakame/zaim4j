@@ -23,6 +23,7 @@ import net.vvakame.zaim4j.OAuthConfiguration;
 import net.vvakame.zaim4j.OAuthCredential;
 import net.vvakame.zaim4j.OtherAccountListResponse;
 import net.vvakame.zaim4j.OtherCategoryListResponse;
+import net.vvakame.zaim4j.OtherCurrencyListResponse;
 import net.vvakame.zaim4j.OtherGenreListResponse;
 import net.vvakame.zaim4j.UserVerifyResponse;
 import net.vvakame.zaim4j.Zaim;
@@ -573,6 +574,39 @@ public class ZaimTest {
 			public void onSuccess(OtherGenreListResponse success) {
 				assertThat(success.getRequested(), not(0L));
 				assertThat(success.getGenres().size(), not(0));
+				holder.ok(success);
+			}
+
+			@Override
+			public void onFailure(ErrorResponse failure) {
+				fail(failure.getMessage());
+			}
+
+			@Override
+			public void onError(Exception e) {
+				throw new RuntimeException(e);
+			}
+		});
+		assertThat(holder.getObject(), notNullValue());
+	}
+
+	/**
+	 * Test for {@link net.vvakame.zaim4j.Zaim.Other.Currency.List#execute(ZaimListener)}.
+	 * @throws IOException
+	 * @throws JsonFormatException
+	 * @author vvakame
+	 */
+	@Test
+	public void other_currency_list() throws IOException, JsonFormatException {
+		Zaim zaim = getZaimInstance();
+
+		final Holder<OtherCurrencyListResponse> holder = new Holder<OtherCurrencyListResponse>();
+		zaim.other().currency().list().execute(new ZaimListener<OtherCurrencyListResponse>() {
+
+			@Override
+			public void onSuccess(OtherCurrencyListResponse success) {
+				assertThat(success.getRequested(), not(0L));
+				assertThat(success.getCurrencies().size(), not(0));
 				holder.ok(success);
 			}
 

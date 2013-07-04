@@ -1390,5 +1390,76 @@ public class Zaim {
 		public Genre genre() {
 			return new Genre();
 		}
+
+
+		/**
+		 * Currency list API.
+		 * @author vvakame
+		 */
+		public class Currency {
+
+			/**
+			 * Currency list API.
+			 * @author vvakame
+			 */
+			public class List {
+
+				private List() {
+				}
+
+				/**
+				 * Get currency list api.
+				 * @param listener
+				 * @author vvakame
+				 */
+				public void execute(ZaimListener<OtherCurrencyListResponse> listener) {
+					if (listener == null) {
+						throw new NullPointerException("listener is required");
+					}
+
+					String urlStr =
+							connector.configuration.getBaseUrl() + "/v2/currency".substring(1);
+					try {
+						URL url = new URL(urlStr);
+						HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+						connection.setRequestMethod("GET");
+
+						doCallback(connection, listener,
+								new ResponseConverter<OtherCurrencyListResponse>() {
+
+									@Override
+									public OtherCurrencyListResponse convert(InputStream is)
+											throws IOException, JsonFormatException {
+										return OtherCurrencyListResponseGen.get(is);
+									}
+								});
+					} catch (MalformedURLException e) {
+						listener.onError(e);
+					} catch (IOException e) {
+						listener.onError(e);
+					}
+				}
+			}
+
+
+			/**
+			 * Category list api.
+			 * @return list api
+			 * @author vvakame
+			 */
+			public List list() {
+				return new List();
+			}
+		}
+
+
+		/**
+		 * Currency list api.
+		 * @return list api
+		 * @author vvakame
+		 */
+		public Currency currency() {
+			return new Currency();
+		}
 	}
 }
