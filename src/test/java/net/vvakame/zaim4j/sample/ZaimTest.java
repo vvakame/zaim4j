@@ -10,6 +10,7 @@ import java.util.Date;
 import net.vvakame.util.jsonpullparser.JsonFormatException;
 import net.vvakame.zaim4j.CategoryListResponse;
 import net.vvakame.zaim4j.ErrorResponse;
+import net.vvakame.zaim4j.GenreListResponse;
 import net.vvakame.zaim4j.MoneyIncomeInsertArgument;
 import net.vvakame.zaim4j.MoneyListResponse;
 import net.vvakame.zaim4j.MoneyModifiedResponse;
@@ -387,7 +388,7 @@ public class ZaimTest {
 	}
 
 	/**
-	 * Test for {@link net.vvakame.zaim4j.Zaim.Money.Transfer.Insert#execute(ZaimListener)}.
+	 * Test for {@link net.vvakame.zaim4j.Zaim.Category.List#execute(ZaimListener)}.
 	 * @throws IOException
 	 * @throws JsonFormatException
 	 * @author vvakame
@@ -403,6 +404,39 @@ public class ZaimTest {
 			public void onSuccess(CategoryListResponse success) {
 				assertThat(success.getRequested(), not(0L));
 				assertThat(success.getCategories().size(), not(0));
+				holder.ok(success);
+			}
+
+			@Override
+			public void onFailure(ErrorResponse failure) {
+				fail(failure.getMessage());
+			}
+
+			@Override
+			public void onError(Exception e) {
+				throw new RuntimeException(e);
+			}
+		});
+		assertThat(holder.getObject(), notNullValue());
+	}
+
+	/**
+	 * Test for {@link net.vvakame.zaim4j.Zaim.Genre.List#execute(ZaimListener)}.
+	 * @throws IOException
+	 * @throws JsonFormatException
+	 * @author vvakame
+	 */
+	@Test
+	public void genre_list() throws IOException, JsonFormatException {
+		Zaim zaim = getZaimInstance();
+
+		final Holder<GenreListResponse> holder = new Holder<GenreListResponse>();
+		zaim.genre().list().execute(new ZaimListener<GenreListResponse>() {
+
+			@Override
+			public void onSuccess(GenreListResponse success) {
+				assertThat(success.getRequested(), not(0L));
+				assertThat(success.getGenres().size(), not(0));
 				holder.ok(success);
 			}
 
