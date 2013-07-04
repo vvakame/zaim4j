@@ -49,12 +49,6 @@ class OAuthConnector {
 	public HttpURLConnection exec(ProcessType type, String method, String urlStr,
 			Map<String, String> authParams, Map<String, String> apiParams) {
 
-		if (urlStr.startsWith("/")) {
-			urlStr = configuration.getBaseUrl() + urlStr.substring(1);
-		} else {
-			urlStr = configuration.getBaseUrl() + urlStr;
-		}
-
 		SortedMap<String, String> params = new TreeMap<String, String>();
 		if (authParams != null && authParams.size() != 0) {
 			params.putAll(authParams);
@@ -109,18 +103,33 @@ class OAuthConnector {
 	public HttpURLConnection doGet(String url, Map<String, String> params) {
 		Map<String, String> authParams = new HashMap<String, String>();
 		authParams.put("oauth_token", credential.getOauthToken());
+		if (url.startsWith("/")) {
+			url = configuration.getBaseUrl() + url.substring(1);
+		} else {
+			url = configuration.getBaseUrl() + url;
+		}
 		return exec(ProcessType.ApiAccess, "GET", url, authParams, params);
 	}
 
 	public HttpURLConnection doPost(String url, Map<String, String> params) {
 		Map<String, String> authParams = new HashMap<String, String>();
 		authParams.put("oauth_token", credential.getOauthToken());
+		if (url.startsWith("/")) {
+			url = configuration.getBaseUrl() + url.substring(1);
+		} else {
+			url = configuration.getBaseUrl() + url;
+		}
 		return exec(ProcessType.ApiAccess, "POST", url, authParams, params);
 	}
 
 	public HttpURLConnection doPut(String url, Map<String, String> params) {
 		Map<String, String> authParams = new HashMap<String, String>();
 		authParams.put("oauth_token", credential.getOauthToken());
+		if (url.startsWith("/")) {
+			url = configuration.getBaseUrl() + url.substring(1);
+		} else {
+			url = configuration.getBaseUrl() + url;
+		}
 		return exec(ProcessType.ApiAccess, "PUT", url, authParams, params);
 	}
 

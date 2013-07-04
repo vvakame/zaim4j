@@ -26,7 +26,7 @@ public class OAuthConnectorTest {
 	 */
 	@Test
 	@Ignore("required manually operation")
-	public void test() throws IOException {
+	public void getAccessToken() throws IOException {
 		OAuthConfiguration configuration =
 				OAuthConfiguration.Builder.fromProperties("/zaim-oauth.properties").build();
 
@@ -36,12 +36,12 @@ public class OAuthConnectorTest {
 		System.out.println(credential.getAuthUrl());
 		String oauthVerifier = new BufferedReader(new InputStreamReader(System.in)).readLine();
 		credential = connector.getAccessToken(oauthVerifier);
+		System.out.println(credential.toJson());
 
 		{
 			Map<String, String> params = new HashMap<String, String>();
 			params.put("category_id", "113");
-			HttpURLConnection connection =
-					connector.doGet("https://api.zaim.net/v2/home/money", params);
+			HttpURLConnection connection = connector.doGet("/v2/home/money", params);
 			System.out.println(OAuthConnector.connectionToString(connection));
 		}
 	}
