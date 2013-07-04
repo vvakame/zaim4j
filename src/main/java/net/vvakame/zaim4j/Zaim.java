@@ -313,69 +313,93 @@ public class Zaim {
 		 */
 		public class Payment {
 
-			MoneyPaymentArgument arg;
-
-
-			private Payment(MoneyPaymentArgument arg) {
-				if (arg == null) {
-					throw new NullPointerException("argment is reqruired.");
-				} else {
-					this.arg = arg;
-				}
+			private Payment() {
 			}
 
+
 			/**
-			 * Get money list api.
-			 * @param listener
+			 * Money payment insert api.
 			 * @author vvakame
 			 */
-			public void execute(ZaimListener<MoneyPostResponse> listener) {
-				if (listener == null) {
-					throw new NullPointerException("listener is required");
-				}
+			public class Insert {
 
-				Map<String, String> params = new HashMap<String, String>();
-				// required
-				params.put("category_id", String.valueOf(arg.getCategoryId()));
-				params.put("genre_id", String.valueOf(arg.getGenreId()));
-				params.put("amount", String.valueOf(arg.getAmount()));
-				params.put("date", String.valueOf(arg.getDate()));
-				// optional
-				if (arg.getFromAccountId() != null) {
-					params.put("from_account_id", String.valueOf(arg.getFromAccountId()));
-				}
-				if (arg.getComment() != null) {
-					params.put("comment", arg.getComment());
-				}
-				if (arg.getName() != null) {
-					params.put("name", arg.getName());
-				}
-				if (arg.getPlace() != null) {
-					params.put("place", arg.getPlace());
-				}
+				MoneyPaymentInsertArgument arg;
 
-				HttpURLConnection connection = connector.doPost("/v2/home/money/payment", params);
 
-				doCallback(connection, listener, new ResponseConverter<MoneyPostResponse>() {
-
-					@Override
-					public MoneyPostResponse convert(InputStream is) throws IOException,
-							JsonFormatException {
-						return MoneyPostResponseGen.get(is);
+				private Insert(MoneyPaymentInsertArgument arg) {
+					if (arg == null) {
+						throw new NullPointerException("argment is reqruired.");
+					} else {
+						this.arg = arg;
 					}
-				});
+				}
+
+				/**
+				 * Get money list api.
+				 * @param listener
+				 * @author vvakame
+				 */
+				public void execute(ZaimListener<MoneyPostInsertResponse> listener) {
+					if (listener == null) {
+						throw new NullPointerException("listener is required");
+					}
+
+					Map<String, String> params = new HashMap<String, String>();
+					// required
+					params.put("category_id", String.valueOf(arg.getCategoryId()));
+					params.put("genre_id", String.valueOf(arg.getGenreId()));
+					params.put("amount", String.valueOf(arg.getAmount()));
+					params.put("date", String.valueOf(arg.getDate()));
+					// optional
+					if (arg.getFromAccountId() != null) {
+						params.put("from_account_id", String.valueOf(arg.getFromAccountId()));
+					}
+					if (arg.getComment() != null) {
+						params.put("comment", arg.getComment());
+					}
+					if (arg.getName() != null) {
+						params.put("name", arg.getName());
+					}
+					if (arg.getPlace() != null) {
+						params.put("place", arg.getPlace());
+					}
+
+					HttpURLConnection connection =
+							connector.doPost("/v2/home/money/payment", params);
+
+					doCallback(connection, listener,
+							new ResponseConverter<MoneyPostInsertResponse>() {
+
+								@Override
+								public MoneyPostInsertResponse convert(InputStream is)
+										throws IOException, JsonFormatException {
+									return MoneyPostInsertResponseGen.get(is);
+								}
+							});
+				}
+
+			}
+
+
+			/**
+			* Money payment insert api.
+			* @param arg
+			* @return insert api
+			* @author vvakame
+			*/
+			public Insert insert(MoneyPaymentInsertArgument arg) {
+				return new Insert(arg);
 			}
 		}
 
 
 		/**
 		 * Money payment api.
-		 * @param arg
 		 * @return payment api
 		 * @author vvakame
 		 */
-		public Payment payment(MoneyPaymentArgument arg) {
-			return new Payment(arg);
+		public Payment payment() {
+			return new Payment();
 		}
 
 
@@ -385,62 +409,86 @@ public class Zaim {
 		 */
 		public class Income {
 
-			MoneyIncomeArgument arg;
-
-
-			private Income(MoneyIncomeArgument arg) {
-				if (arg == null) {
-					throw new NullPointerException("argment is reqruired.");
-				} else {
-					this.arg = arg;
-				}
+			private Income() {
 			}
+
 
 			/**
-			 * Get money list api.
-			 * @param listener
+			 * Money income insert api.
 			 * @author vvakame
 			 */
-			public void execute(ZaimListener<MoneyPostResponse> listener) {
-				if (listener == null) {
-					throw new NullPointerException("listener is required");
-				}
+			public class Insert {
 
-				Map<String, String> params = new HashMap<String, String>();
-				// required
-				params.put("category_id", String.valueOf(arg.getCategoryId()));
-				params.put("amount", String.valueOf(arg.getAmount()));
-				params.put("date", String.valueOf(arg.getDate()));
-				// optional
-				if (arg.getToAccountId() != null) {
-					params.put("to_account_id", String.valueOf(arg.getToAccountId()));
-				}
-				if (arg.getComment() != null) {
-					params.put("comment", arg.getComment());
-				}
+				MoneyIncomeInsertArgument arg;
 
-				HttpURLConnection connection = connector.doPost("/v2/home/money/income", params);
 
-				doCallback(connection, listener, new ResponseConverter<MoneyPostResponse>() {
-
-					@Override
-					public MoneyPostResponse convert(InputStream is) throws IOException,
-							JsonFormatException {
-						return MoneyPostResponseGen.get(is);
+				private Insert(MoneyIncomeInsertArgument arg) {
+					if (arg == null) {
+						throw new NullPointerException("argment is reqruired.");
+					} else {
+						this.arg = arg;
 					}
-				});
+				}
+
+				/**
+				 * Get money list api.
+				 * @param listener
+				 * @author vvakame
+				 */
+				public void execute(ZaimListener<MoneyPostInsertResponse> listener) {
+					if (listener == null) {
+						throw new NullPointerException("listener is required");
+					}
+
+					Map<String, String> params = new HashMap<String, String>();
+					// required
+					params.put("category_id", String.valueOf(arg.getCategoryId()));
+					params.put("amount", String.valueOf(arg.getAmount()));
+					params.put("date", String.valueOf(arg.getDate()));
+					// optional
+					if (arg.getToAccountId() != null) {
+						params.put("to_account_id", String.valueOf(arg.getToAccountId()));
+					}
+					if (arg.getComment() != null) {
+						params.put("comment", arg.getComment());
+					}
+
+					HttpURLConnection connection =
+							connector.doPost("/v2/home/money/income", params);
+
+					doCallback(connection, listener,
+							new ResponseConverter<MoneyPostInsertResponse>() {
+
+								@Override
+								public MoneyPostInsertResponse convert(InputStream is)
+										throws IOException, JsonFormatException {
+									return MoneyPostInsertResponseGen.get(is);
+								}
+							});
+				}
 			}
+
+
+			/**
+			 * Money income insert api.
+			 * @param arg
+			 * @return income api
+			 * @author vvakame
+			 */
+			public Insert insert(MoneyIncomeInsertArgument arg) {
+				return new Insert(arg);
+			}
+
 		}
 
 
 		/**
 		 * Money income api.
-		 * @param arg
 		 * @return income api
 		 * @author vvakame
 		 */
-		public Income income(MoneyIncomeArgument arg) {
-			return new Income(arg);
+		public Income income() {
+			return new Income();
 		}
 
 
@@ -450,61 +498,87 @@ public class Zaim {
 		 */
 		public class Transfer {
 
-			MoneyTransferArgument arg;
+			private Transfer() {
+			}
 
 
-			private Transfer(MoneyTransferArgument arg) {
-				if (arg == null) {
-					throw new NullPointerException("argment is reqruired.");
-				} else {
-					this.arg = arg;
+			/**
+			 * Money transfer insert api.
+			 * @author vvakame
+			 */
+			public class Insert {
+
+				MoneyTransferInsertArgument arg;
+
+
+				private Insert(MoneyTransferInsertArgument arg) {
+					if (arg == null) {
+						throw new NullPointerException("argment is reqruired.");
+					} else {
+						this.arg = arg;
+					}
+				}
+
+				/**
+				 * Get money list api.
+				 * @param listener
+				 * @author vvakame
+				 */
+				public void execute(ZaimListener<MoneyPostInsertResponse> listener) {
+					if (listener == null) {
+						throw new NullPointerException("listener is required");
+					}
+
+					Map<String, String> params = new HashMap<String, String>();
+					// required
+					params.put("amount", String.valueOf(arg.getAmount()));
+					params.put("date", String.valueOf(arg.getDate()));
+					params.put("from_account_id", String.valueOf(arg.getFromAccountId()));
+					params.put("to_account_id", String.valueOf(arg.getToAccountId()));
+					// optional
+					if (arg.getComment() != null) {
+						params.put("comment", arg.getComment());
+					}
+
+					HttpURLConnection connection =
+							connector.doPost("/v2/home/money/transfer", params);
+
+					doCallback(connection, listener,
+							new ResponseConverter<MoneyPostInsertResponse>() {
+
+								@Override
+								public MoneyPostInsertResponse convert(InputStream is)
+										throws IOException, JsonFormatException {
+									return MoneyPostInsertResponseGen.get(is);
+								}
+							});
 				}
 			}
 
+
 			/**
-			 * Get money list api.
-			 * @param listener
+			 * Money transfer insert api.
+			 * @param arg
+			 * @return transfer api
 			 * @author vvakame
 			 */
-			public void execute(ZaimListener<MoneyPostResponse> listener) {
-				if (listener == null) {
-					throw new NullPointerException("listener is required");
-				}
-
-				Map<String, String> params = new HashMap<String, String>();
-				// required
-				params.put("amount", String.valueOf(arg.getAmount()));
-				params.put("date", String.valueOf(arg.getDate()));
-				params.put("from_account_id", String.valueOf(arg.getFromAccountId()));
-				params.put("to_account_id", String.valueOf(arg.getToAccountId()));
-				// optional
-				if (arg.getComment() != null) {
-					params.put("comment", arg.getComment());
-				}
-
-				HttpURLConnection connection = connector.doPost("/v2/home/money/transfer", params);
-
-				doCallback(connection, listener, new ResponseConverter<MoneyPostResponse>() {
-
-					@Override
-					public MoneyPostResponse convert(InputStream is) throws IOException,
-							JsonFormatException {
-						return MoneyPostResponseGen.get(is);
-					}
-				});
+			public Insert insert(MoneyTransferInsertArgument arg) {
+				return new Insert(arg);
 			}
 		}
 
 
 		/**
 		 * Money transfer api.
-		 * @param arg
 		 * @return transfer api
 		 * @author vvakame
 		 */
-		public Transfer transfer(MoneyTransferArgument arg) {
-			return new Transfer(arg);
+		public Transfer transfer() {
+			return new Transfer();
 		}
+
+		// TODO PUT /v2/home/money/:id
+		// TODO DELETE /v2/home/money/:id
 	}
 
 	/**

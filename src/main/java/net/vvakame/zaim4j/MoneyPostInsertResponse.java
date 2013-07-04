@@ -5,13 +5,13 @@ import net.vvakame.util.jsonpullparser.annotation.JsonModel;
 
 /**
  * Money payment response.
- * @see Zaim.Money.Payment#execute(net.vvakame.zaim4j.Zaim.ZaimListener)
- * @see Zaim.Money.Income#execute(net.vvakame.zaim4j.Zaim.ZaimListener)
- * @see Zaim.Money.Transfer#execute(net.vvakame.zaim4j.Zaim.ZaimListener)
+ * @see Zaim.Money.Payment.Insert#execute(net.vvakame.zaim4j.Zaim.ZaimListener)
+ * @see Zaim.Money.Income.Insert#execute(net.vvakame.zaim4j.Zaim.ZaimListener)
+ * @see Zaim.Money.Transfer.Insert#execute(net.vvakame.zaim4j.Zaim.ZaimListener)
  * @author vvakame
  */
 @JsonModel(decamelize = true, genToPackagePrivate = true, treatUnknownKeyAsError = true)
-public class MoneyPostResponse {
+public class MoneyPostInsertResponse {
 
 	@JsonKey
 	MoneyStamps stamps;

@@ -1,11 +1,11 @@
 package net.vvakame.zaim4j;
 
 /**
- * Argument for Money payment API.
- * @see Zaim.Money#payment(MoneyPaymentArgument)
+ * Argument for Money payment insert API.
+ * @see Zaim.Money.Payment#insert(MoneyPaymentInsertArgument)
  * @author vvakame
  */
-public class MoneyPaymentArgument {
+public class MoneyPaymentInsertArgument {
 
 	// reqruired
 
@@ -36,7 +36,7 @@ public class MoneyPaymentArgument {
 	 * @param date
 	 * @category constructor
 	 */
-	public MoneyPaymentArgument(long categoryId, long genreId, double amount, String date) {
+	public MoneyPaymentInsertArgument(long categoryId, long genreId, double amount, String date) {
 		this.categoryId = categoryId;
 		this.genreId = genreId;
 		this.amount = amount;

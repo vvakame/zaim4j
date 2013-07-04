@@ -1,40 +1,53 @@
 package net.vvakame.zaim4j;
 
 /**
- * Argument for Money transfer API.
- * @see Zaim.Money#transfer(MoneyTransferArgument)
+ * Argument for Money income insert API.
+ * @see Zaim.Money.Income#insert(MoneyIncomeInsertArgument)
  * @author vvakame
  */
-public class MoneyTransferArgument {
+public class MoneyIncomeInsertArgument {
 
 	// reqruired
+	long categoryId;
+
 	double amount;
 
 	String date;
 
-	long fromAccountId;
-
-	long toAccountId;
-
 	// not required
+	Long toAccountId;
 
 	String comment;
 
 
 	/**
 	 * the constructor.
+	 * @param categoryId
 	 * @param amount
 	 * @param date
-	 * @param fromAccountId
-	 * @param toAccountId
 	 * @category constructor
 	 */
-	public MoneyTransferArgument(double amount, String date, long fromAccountId, long toAccountId) {
+	public MoneyIncomeInsertArgument(long categoryId, double amount, String date) {
 		super();
+		this.categoryId = categoryId;
 		this.amount = amount;
 		this.date = date;
-		this.fromAccountId = fromAccountId;
-		this.toAccountId = toAccountId;
+	}
+
+	/**
+	 * @return the categoryId
+	 * @category accessor
+	 */
+	public long getCategoryId() {
+		return categoryId;
+	}
+
+	/**
+	 * @param categoryId the categoryId to set
+	 * @category accessor
+	 */
+	public void setCategoryId(long categoryId) {
+		this.categoryId = categoryId;
 	}
 
 	/**
@@ -70,26 +83,10 @@ public class MoneyTransferArgument {
 	}
 
 	/**
-	 * @return the fromAccountId
-	 * @category accessor
-	 */
-	public long getFromAccountId() {
-		return fromAccountId;
-	}
-
-	/**
-	 * @param fromAccountId the fromAccountId to set
-	 * @category accessor
-	 */
-	public void setFromAccountId(long fromAccountId) {
-		this.fromAccountId = fromAccountId;
-	}
-
-	/**
 	 * @return the toAccountId
 	 * @category accessor
 	 */
-	public long getToAccountId() {
+	public Long getToAccountId() {
 		return toAccountId;
 	}
 
@@ -97,7 +94,7 @@ public class MoneyTransferArgument {
 	 * @param toAccountId the toAccountId to set
 	 * @category accessor
 	 */
-	public void setToAccountId(long toAccountId) {
+	public void setToAccountId(Long toAccountId) {
 		this.toAccountId = toAccountId;
 	}
 
