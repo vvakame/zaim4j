@@ -1258,7 +1258,7 @@ public class Zaim {
 		public class Category {
 
 			/**
-			 * Account list API.
+			 * Category list API.
 			 * @author vvakame
 			 */
 			public class List {
@@ -1267,7 +1267,7 @@ public class Zaim {
 				}
 
 				/**
-				 * Get account list api.
+				 * Get category list api.
 				 * @param listener
 				 * @author vvakame
 				 */
@@ -1319,6 +1319,76 @@ public class Zaim {
 		 */
 		public Category category() {
 			return new Category();
+		}
+
+
+		/**
+		 * Genre list API.
+		 * @author vvakame
+		 */
+		public class Genre {
+
+			/**
+			 * Genre list API.
+			 * @author vvakame
+			 */
+			public class List {
+
+				private List() {
+				}
+
+				/**
+				 * Get genre list api.
+				 * @param listener
+				 * @author vvakame
+				 */
+				public void execute(ZaimListener<OtherGenreListResponse> listener) {
+					if (listener == null) {
+						throw new NullPointerException("listener is required");
+					}
+
+					String urlStr = connector.configuration.getBaseUrl() + "/v2/genre".substring(1);
+					try {
+						URL url = new URL(urlStr);
+						HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+						connection.setRequestMethod("GET");
+
+						doCallback(connection, listener,
+								new ResponseConverter<OtherGenreListResponse>() {
+
+									@Override
+									public OtherGenreListResponse convert(InputStream is)
+											throws IOException, JsonFormatException {
+										return OtherGenreListResponseGen.get(is);
+									}
+								});
+					} catch (MalformedURLException e) {
+						listener.onError(e);
+					} catch (IOException e) {
+						listener.onError(e);
+					}
+				}
+			}
+
+
+			/**
+			 * Category list api.
+			 * @return list api
+			 * @author vvakame
+			 */
+			public List list() {
+				return new List();
+			}
+		}
+
+
+		/**
+		 * Genre list api.
+		 * @return list api
+		 * @author vvakame
+		 */
+		public Genre genre() {
+			return new Genre();
 		}
 	}
 }
