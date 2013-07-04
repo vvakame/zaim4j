@@ -1249,5 +1249,76 @@ public class Zaim {
 		public Account account() {
 			return new Account();
 		}
+
+
+		/**
+		 * Category list API.
+		 * @author vvakame
+		 */
+		public class Category {
+
+			/**
+			 * Account list API.
+			 * @author vvakame
+			 */
+			public class List {
+
+				private List() {
+				}
+
+				/**
+				 * Get account list api.
+				 * @param listener
+				 * @author vvakame
+				 */
+				public void execute(ZaimListener<OtherCategoryListResponse> listener) {
+					if (listener == null) {
+						throw new NullPointerException("listener is required");
+					}
+
+					String urlStr =
+							connector.configuration.getBaseUrl() + "/v2/category".substring(1);
+					try {
+						URL url = new URL(urlStr);
+						HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+						connection.setRequestMethod("GET");
+
+						doCallback(connection, listener,
+								new ResponseConverter<OtherCategoryListResponse>() {
+
+									@Override
+									public OtherCategoryListResponse convert(InputStream is)
+											throws IOException, JsonFormatException {
+										return OtherCategoryListResponseGen.get(is);
+									}
+								});
+					} catch (MalformedURLException e) {
+						listener.onError(e);
+					} catch (IOException e) {
+						listener.onError(e);
+					}
+				}
+			}
+
+
+			/**
+			 * Category list api.
+			 * @return list api
+			 * @author vvakame
+			 */
+			public List list() {
+				return new List();
+			}
+		}
+
+
+		/**
+		 * Category list api.
+		 * @return list api
+		 * @author vvakame
+		 */
+		public Category category() {
+			return new Category();
+		}
 	}
 }

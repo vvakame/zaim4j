@@ -22,6 +22,7 @@ import net.vvakame.zaim4j.MoneyUpdateArgument;
 import net.vvakame.zaim4j.OAuthConfiguration;
 import net.vvakame.zaim4j.OAuthCredential;
 import net.vvakame.zaim4j.OtherAccountListResponse;
+import net.vvakame.zaim4j.OtherCategoryListResponse;
 import net.vvakame.zaim4j.UserVerifyResponse;
 import net.vvakame.zaim4j.Zaim;
 import net.vvakame.zaim4j.Zaim.ZaimListener;
@@ -305,7 +306,7 @@ public class ZaimTest {
 	 */
 	@Test
 	@Ignore("this test create actual data...")
-	public void money_transfer_insert() throws IOException, JsonFormatException {
+	public void money_transfer() throws IOException, JsonFormatException {
 		Zaim zaim = getZaimInstance();
 
 		final long moneyId;
@@ -456,6 +457,39 @@ public class ZaimTest {
 	}
 
 	/**
+	 * Test for {@link net.vvakame.zaim4j.Zaim.Account.List#execute(ZaimListener)}.
+	 * @throws IOException
+	 * @throws JsonFormatException
+	 * @author vvakame
+	 */
+	@Test
+	public void account_list() throws IOException, JsonFormatException {
+		Zaim zaim = getZaimInstance();
+
+		final Holder<AccountListResponse> holder = new Holder<AccountListResponse>();
+		zaim.account().list().execute(new ZaimListener<AccountListResponse>() {
+
+			@Override
+			public void onSuccess(AccountListResponse success) {
+				assertThat(success.getRequested(), not(0L));
+				assertThat(success.getAccounts().size(), not(0));
+				holder.ok(success);
+			}
+
+			@Override
+			public void onFailure(ErrorResponse failure) {
+				fail(failure.getMessage());
+			}
+
+			@Override
+			public void onError(Exception e) {
+				throw new RuntimeException(e);
+			}
+		});
+		assertThat(holder.getObject(), notNullValue());
+	}
+
+	/**
 	 * Test for {@link net.vvakame.zaim4j.Zaim.Other.Account.List#execute(ZaimListener)}.
 	 * @throws IOException
 	 * @throws JsonFormatException
@@ -489,22 +523,22 @@ public class ZaimTest {
 	}
 
 	/**
-	 * Test for {@link net.vvakame.zaim4j.Zaim.Account.List#execute(ZaimListener)}.
+	 * Test for {@link net.vvakame.zaim4j.Zaim.Other.Category.List#execute(ZaimListener)}.
 	 * @throws IOException
 	 * @throws JsonFormatException
 	 * @author vvakame
 	 */
 	@Test
-	public void account_list() throws IOException, JsonFormatException {
+	public void other_category_list() throws IOException, JsonFormatException {
 		Zaim zaim = getZaimInstance();
 
-		final Holder<AccountListResponse> holder = new Holder<AccountListResponse>();
-		zaim.account().list().execute(new ZaimListener<AccountListResponse>() {
+		final Holder<OtherCategoryListResponse> holder = new Holder<OtherCategoryListResponse>();
+		zaim.other().category().list().execute(new ZaimListener<OtherCategoryListResponse>() {
 
 			@Override
-			public void onSuccess(AccountListResponse success) {
+			public void onSuccess(OtherCategoryListResponse success) {
 				assertThat(success.getRequested(), not(0L));
-				assertThat(success.getAccounts().size(), not(0));
+				assertThat(success.getCategories().size(), not(0));
 				holder.ok(success);
 			}
 
