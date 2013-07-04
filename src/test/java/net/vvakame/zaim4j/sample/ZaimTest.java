@@ -11,6 +11,7 @@ import net.vvakame.zaim4j.MoneyIncomeArgument;
 import net.vvakame.zaim4j.MoneyListResponse;
 import net.vvakame.zaim4j.MoneyPaymentArgument;
 import net.vvakame.zaim4j.MoneyPostResponse;
+import net.vvakame.zaim4j.MoneyTransferArgument;
 import net.vvakame.zaim4j.OAuthConfiguration;
 import net.vvakame.zaim4j.OAuthCredential;
 import net.vvakame.zaim4j.Zaim;
@@ -114,6 +115,42 @@ public class ZaimTest {
 		final Checker checker = new Checker();
 		MoneyIncomeArgument argument = new MoneyIncomeArgument(11, 999, "2013-07-07");
 		zaim.money().income(argument).execute(new ZaimListener<MoneyPostResponse>() {
+
+			@Override
+			public void onSuccess(MoneyPostResponse success) {
+				assertThat(success.getRequested(), not(0L));
+				assertThat(success.getMoney(), notNullValue());
+				assertThat(success.getUser(), notNullValue());
+				checker.ok();
+			}
+
+			@Override
+			public void onFailure(ErrorResponse failure) {
+				fail(failure.getMessage());
+			}
+
+			@Override
+			public void onError(Exception e) {
+				throw new RuntimeException(e);
+			}
+		});
+		assertThat(checker.isOk(), is(true));
+	}
+
+	/**
+	 * Test for {@link net.vvakame.zaim4j.Zaim.Money.Transfer#execute(ZaimListener)}.
+	 * @throws IOException
+	 * @throws JsonFormatException
+	 * @author vvakame
+	 */
+	@Test
+	@Ignore("this test create actual data...")
+	public void money_transfer() throws IOException, JsonFormatException {
+		Zaim zaim = getZaimInstance();
+
+		final Checker checker = new Checker();
+		MoneyTransferArgument argument = new MoneyTransferArgument(999, "2013-07-07", 1, 2);
+		zaim.money().transfer(argument).execute(new ZaimListener<MoneyPostResponse>() {
 
 			@Override
 			public void onSuccess(MoneyPostResponse success) {

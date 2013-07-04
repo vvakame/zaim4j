@@ -396,6 +396,69 @@ public class Zaim {
 		public Income income(MoneyIncomeArgument arg) {
 			return new Income(arg);
 		}
+
+
+		/**
+		 * Money transfer api.
+		 * @author vvakame
+		 */
+		public class Transfer {
+
+			MoneyTransferArgument arg;
+
+
+			private Transfer(MoneyTransferArgument arg) {
+				if (arg == null) {
+					throw new NullPointerException("argment is reqruired.");
+				} else {
+					this.arg = arg;
+				}
+			}
+
+			/**
+			 * Get money list api.
+			 * @param listener
+			 * @author vvakame
+			 */
+			public void execute(ZaimListener<MoneyPostResponse> listener) {
+				if (listener == null) {
+					throw new NullPointerException("listener is required");
+				}
+
+				Map<String, String> params = new HashMap<String, String>();
+				// required
+				params.put("amount", String.valueOf(arg.getAmount()));
+				params.put("date", String.valueOf(arg.getDate()));
+				params.put("from_account_id", String.valueOf(arg.getFromAccountId()));
+				params.put("to_account_id", String.valueOf(arg.getToAccountId()));
+				// optional
+				if (arg.getComment() != null) {
+					params.put("comment", arg.getComment());
+				}
+
+				HttpURLConnection connection = connector.doPost("/v2/home/money/transfer", params);
+
+				doCallback(connection, listener, new ResponseConverter<MoneyPostResponse>() {
+
+					@Override
+					public MoneyPostResponse convert(InputStream is) throws IOException,
+							JsonFormatException {
+						return MoneyPostResponseGen.get(is);
+					}
+				});
+			}
+		}
+
+
+		/**
+		 * Money transfer api.
+		 * @param arg
+		 * @return transfer api
+		 * @author vvakame
+		 */
+		public Transfer transfer(MoneyTransferArgument arg) {
+			return new Transfer(arg);
+		}
 	}
 
 	/**
