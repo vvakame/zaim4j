@@ -29,12 +29,20 @@ public class MoneyTransferInsertArgument {
 	 * @param toAccountId
 	 * @category constructor
 	 */
-	public MoneyTransferInsertArgument(double amount, String date, long fromAccountId, long toAccountId) {
+	public MoneyTransferInsertArgument(double amount, String date, long fromAccountId,
+			long toAccountId) {
 		super();
 		this.amount = amount;
 		this.date = date;
 		this.fromAccountId = fromAccountId;
 		this.toAccountId = toAccountId;
+	}
+
+	@Override
+	public String toString() {
+		return "MoneyTransferInsertArgument [amount=" + amount + ", date=" + date
+				+ ", fromAccountId=" + fromAccountId + ", toAccountId=" + toAccountId
+				+ ", comment=" + comment + "]";
 	}
 
 	/**

@@ -31,6 +31,14 @@ public class OAuthConfiguration implements Serializable {
 	private OAuthConfiguration() {
 	}
 
+	@Override
+	public String toString() {
+		return "OAuthConfiguration [consumerKey=" + consumerKey + ", consumerSecret="
+				+ consumerSecret + ", baseUrl=" + baseUrl + ", requestTokenUrl=" + requestTokenUrl
+				+ ", authorizeUrl=" + authorizeUrl + ", accessTokenUrl=" + accessTokenUrl
+				+ ", callbackUrl=" + callbackUrl + "]";
+	}
+
 
 	/**
 	 * Builder for {@link OAuthConfiguration}.

@@ -1,5 +1,8 @@
 package net.vvakame.zaim4j;
 
+import java.io.IOException;
+import java.io.StringWriter;
+
 import net.vvakame.util.jsonpullparser.annotation.JsonKey;
 import net.vvakame.util.jsonpullparser.annotation.JsonModel;
 
@@ -46,6 +49,17 @@ public class AccountItem {
 	@JsonKey
 	long active;
 
+
+	@Override
+	public String toString() {
+		StringWriter writer = new StringWriter();
+		try {
+			AccountItemGen.encode(writer, this);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		return writer.toString();
+	}
 
 	/**
 	 * @return the id

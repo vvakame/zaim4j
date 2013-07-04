@@ -39,6 +39,13 @@ public class MoneyUpdateArgument {
 		this.date = date;
 	}
 
+	@Override
+	public String toString() {
+		return "MoneyUpdateArgument [id=" + id + ", amount=" + amount + ", date=" + date
+				+ ", fromAccountId=" + fromAccountId + ", toAccountId=" + toAccountId + ", genre="
+				+ genre + ", CategoryId=" + CategoryId + ", comment=" + comment + "]";
+	}
+
 	/**
 	 * @return the id
 	 * @category accessor

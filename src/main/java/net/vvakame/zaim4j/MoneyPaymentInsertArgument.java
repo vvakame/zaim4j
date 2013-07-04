@@ -43,6 +43,13 @@ public class MoneyPaymentInsertArgument {
 		this.date = date;
 	}
 
+	@Override
+	public String toString() {
+		return "MoneyPaymentInsertArgument [categoryId=" + categoryId + ", genreId=" + genreId
+				+ ", amount=" + amount + ", date=" + date + ", fromAccountId=" + fromAccountId
+				+ ", comment=" + comment + ", name=" + name + ", place=" + place + "]";
+	}
+
 	/**
 	 * @return the categoryId
 	 * @category accessor

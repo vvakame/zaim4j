@@ -1,5 +1,8 @@
 package net.vvakame.zaim4j;
 
+import java.io.IOException;
+import java.io.StringWriter;
+
 import net.vvakame.util.jsonpullparser.annotation.JsonKey;
 import net.vvakame.util.jsonpullparser.annotation.JsonModel;
 
@@ -22,6 +25,17 @@ public class MoneyModifiedResponse {
 	@JsonKey
 	long requested;
 
+
+	@Override
+	public String toString() {
+		StringWriter writer = new StringWriter();
+		try {
+			MoneyModifiedResponseGen.encode(writer, this);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		return writer.toString();
+	}
 
 	/**
 	 * @return the user
