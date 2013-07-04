@@ -2,13 +2,16 @@ package net.vvakame.zaim4j;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.util.Properties;
 
 /**
  * OAuth configuration for application.
  * @author vvakame
  */
-public class OAuthConfiguration {
+public class OAuthConfiguration implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	String consumerKey;
 

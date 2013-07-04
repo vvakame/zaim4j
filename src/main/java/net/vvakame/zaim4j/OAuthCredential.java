@@ -1,5 +1,10 @@
 package net.vvakame.zaim4j;
 
+import java.io.IOException;
+import java.io.Serializable;
+import java.io.StringWriter;
+
+import net.vvakame.util.jsonpullparser.JsonFormatException;
 import net.vvakame.util.jsonpullparser.annotation.JsonKey;
 import net.vvakame.util.jsonpullparser.annotation.JsonModel;
 
@@ -8,7 +13,9 @@ import net.vvakame.util.jsonpullparser.annotation.JsonModel;
  * @author vvakame
  */
 @JsonModel(genToPackagePrivate = true, treatUnknownKeyAsError = true)
-public class OAuthCredential {
+public class OAuthCredential implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	OAuthConfiguration configuration;
 
@@ -23,6 +30,23 @@ public class OAuthCredential {
 
 	@JsonKey
 	String oauthTokenSecret;
+
+
+	/**
+	 * Convert to JSON.<br>
+	 * @return JSON string
+	 * @see Builder#newBuild(OAuthConfiguration, String)
+	 * @author vvakame
+	 */
+	public String toJson() {
+		StringWriter writer = new StringWriter();
+		try {
+			OAuthCredentialGen.encode(writer, this);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		return writer.toString();
+	}
 
 
 	/**
@@ -42,6 +66,25 @@ public class OAuthCredential {
 		 */
 		public static Builder newBuild(OAuthConfiguration configuration) {
 			return new Builder(configuration);
+		}
+
+		/**
+		 * Create new {@link Builder} instance.
+		 * @param configuration 
+		 * @param json JSON of OAuthCredential
+		 * @return new builder instance
+		 * @author vvakame
+		 * @throws JsonFormatException 
+		 */
+		public static Builder newBuild(OAuthConfiguration configuration, String json)
+				throws JsonFormatException {
+			Builder builder = new Builder(configuration);
+			try {
+				builder.credential = OAuthCredentialGen.get(json);
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+			return builder;
 		}
 
 		/**
