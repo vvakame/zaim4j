@@ -1,4 +1,4 @@
-package net.vvakame.zaim4j.sample;
+package net.vvakame.zaim4j.test;
 
 import java.io.BufferedReader;
 import java.io.IOException;

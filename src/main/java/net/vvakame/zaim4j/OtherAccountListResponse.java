@@ -1,5 +1,7 @@
 package net.vvakame.zaim4j;
 
+import java.io.IOException;
+import java.io.StringWriter;
 import java.util.List;
 
 import net.vvakame.util.jsonpullparser.annotation.JsonKey;
@@ -18,6 +20,17 @@ public class OtherAccountListResponse {
 	@JsonKey
 	long requested;
 
+
+	@Override
+	public String toString() {
+		StringWriter writer = new StringWriter();
+		try {
+			OtherAccountListResponseGen.encode(writer, this);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		return writer.toString();
+	}
 
 	/**
 	 * @return the accounts

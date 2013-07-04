@@ -24,6 +24,13 @@ public class MoneyListArgument {
 	Integer limit;
 
 
+	@Override
+	public String toString() {
+		return "MoneyListArgument [categoryId=" + categoryId + ", genreId=" + genreId + ", mode="
+				+ mode + ", order=" + order + ", startDate=" + startDate + ", endDate=" + endDate
+				+ ", page=" + page + ", limit=" + limit + "]";
+	}
+
 	/**
 	 * @return the categoryId
 	 * @category accessor

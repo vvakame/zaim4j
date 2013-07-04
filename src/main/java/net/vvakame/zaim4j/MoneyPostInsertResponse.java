@@ -26,6 +26,12 @@ public class MoneyPostInsertResponse {
 	long requested;
 
 
+	@Override
+	public String toString() {
+		return "MoneyPostInsertResponse [stamps=" + stamps + ", user=" + user + ", money=" + money
+				+ ", requested=" + requested + "]";
+	}
+
 	/**
 	 * @return the stamps
 	 * @category accessor

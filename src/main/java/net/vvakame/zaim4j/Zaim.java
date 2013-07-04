@@ -49,6 +49,34 @@ public class Zaim {
 	}
 
 	/**
+	 * Get RequestToken.
+	 * @param configuration
+	 * @return OAuthCredential it has RequestToken
+	 * @throws IOException
+	 * @author vvakame
+	 */
+	public static OAuthCredential getRequestToken(OAuthConfiguration configuration)
+			throws IOException {
+		OAuthConnector connector = new OAuthConnector(configuration, null);
+		return connector.getRequestToken();
+	}
+
+	/**
+	 * Get AccessToken.
+	 * @param configuration
+	 * @param credential
+	 * @param oauthVerifier
+	 * @return OAuthCredential it has AccessToken
+	 * @throws IOException
+	 * @author vvakame
+	 */
+	public static OAuthCredential getAccessToken(OAuthConfiguration configuration,
+			OAuthCredential credential, String oauthVerifier) throws IOException {
+		OAuthConnector connector = new OAuthConnector(configuration, credential);
+		return connector.getAccessToken(oauthVerifier);
+	}
+
+	/**
 	 * API about user.
 	 * @return user api
 	 * @author vvakame

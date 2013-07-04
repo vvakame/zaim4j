@@ -37,7 +37,7 @@ class OAuthConnector {
 	}
 
 
-	public OAuthConnector(OAuthConfiguration configuration, OAuthCredential credential) {
+	OAuthConnector(OAuthConfiguration configuration, OAuthCredential credential) {
 		this.configuration = configuration;
 		if (credential == null) {
 			this.credential = OAuthCredential.Builder.newBuild(configuration).build();
