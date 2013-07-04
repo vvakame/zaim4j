@@ -7,9 +7,10 @@ import java.io.InputStreamReader;
 
 import net.vvakame.util.jsonpullparser.JsonFormatException;
 import net.vvakame.zaim4j.ErrorResponse;
+import net.vvakame.zaim4j.MoneyIncomeArgument;
 import net.vvakame.zaim4j.MoneyListResponse;
 import net.vvakame.zaim4j.MoneyPaymentArgument;
-import net.vvakame.zaim4j.MoneyPaymentResponse;
+import net.vvakame.zaim4j.MoneyPostResponse;
 import net.vvakame.zaim4j.OAuthConfiguration;
 import net.vvakame.zaim4j.OAuthCredential;
 import net.vvakame.zaim4j.Zaim;
@@ -65,7 +66,6 @@ public class ZaimTest {
 
 	/**
 	 * Test for {@link net.vvakame.zaim4j.Zaim.Money.Payment#execute(ZaimListener)}.
-	 * TODO for vvakame
 	 * @throws IOException
 	 * @throws JsonFormatException
 	 * @author vvakame
@@ -75,31 +75,65 @@ public class ZaimTest {
 	public void money_payment() throws IOException, JsonFormatException {
 		Zaim zaim = getZaimInstance();
 
-		{
-			final Checker checker = new Checker();
-			MoneyPaymentArgument argument = new MoneyPaymentArgument(101, 10103, 888, "2013-7-7");
-			zaim.money().payment(argument).execute(new ZaimListener<MoneyPaymentResponse>() {
+		final Checker checker = new Checker();
+		MoneyPaymentArgument argument = new MoneyPaymentArgument(101, 10103, 888, "2013-7-7");
+		zaim.money().payment(argument).execute(new ZaimListener<MoneyPostResponse>() {
 
-				@Override
-				public void onSuccess(MoneyPaymentResponse success) {
-					assertThat(success.getRequested(), not(0L));
-					assertThat(success.getMoney(), notNullValue());
-					assertThat(success.getUser(), notNullValue());
-					checker.ok();
-				}
+			@Override
+			public void onSuccess(MoneyPostResponse success) {
+				assertThat(success.getRequested(), not(0L));
+				assertThat(success.getMoney(), notNullValue());
+				assertThat(success.getUser(), notNullValue());
+				checker.ok();
+			}
 
-				@Override
-				public void onFailure(ErrorResponse failure) {
-					fail(failure.getMessage());
-				}
+			@Override
+			public void onFailure(ErrorResponse failure) {
+				fail(failure.getMessage());
+			}
 
-				@Override
-				public void onError(Exception e) {
-					throw new RuntimeException(e);
-				}
-			});
-			assertThat(checker.isOk(), is(true));
-		}
+			@Override
+			public void onError(Exception e) {
+				throw new RuntimeException(e);
+			}
+		});
+		assertThat(checker.isOk(), is(true));
+	}
+
+	/**
+	 * Test for {@link net.vvakame.zaim4j.Zaim.Money.Income#execute(ZaimListener)}.
+	 * @throws IOException
+	 * @throws JsonFormatException
+	 * @author vvakame
+	 */
+	@Test
+	@Ignore("this test create actual data...")
+	public void money_income() throws IOException, JsonFormatException {
+		Zaim zaim = getZaimInstance();
+
+		final Checker checker = new Checker();
+		MoneyIncomeArgument argument = new MoneyIncomeArgument(11, 999, "2013-07-07");
+		zaim.money().income(argument).execute(new ZaimListener<MoneyPostResponse>() {
+
+			@Override
+			public void onSuccess(MoneyPostResponse success) {
+				assertThat(success.getRequested(), not(0L));
+				assertThat(success.getMoney(), notNullValue());
+				assertThat(success.getUser(), notNullValue());
+				checker.ok();
+			}
+
+			@Override
+			public void onFailure(ErrorResponse failure) {
+				fail(failure.getMessage());
+			}
+
+			@Override
+			public void onError(Exception e) {
+				throw new RuntimeException(e);
+			}
+		});
+		assertThat(checker.isOk(), is(true));
 	}
 
 	Zaim getZaimInstance() throws IOException, JsonFormatException {

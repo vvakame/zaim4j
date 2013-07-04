@@ -283,7 +283,7 @@ public class Zaim {
 			 * @param listener
 			 * @author vvakame
 			 */
-			public void execute(ZaimListener<MoneyPaymentResponse> listener) {
+			public void execute(ZaimListener<MoneyPostResponse> listener) {
 				if (listener == null) {
 					throw new NullPointerException("listener is required");
 				}
@@ -310,12 +310,12 @@ public class Zaim {
 
 				HttpURLConnection connection = connector.doPost("/v2/home/money/payment", params);
 
-				doCallback(connection, listener, new ResponseConverter<MoneyPaymentResponse>() {
+				doCallback(connection, listener, new ResponseConverter<MoneyPostResponse>() {
 
 					@Override
-					public MoneyPaymentResponse convert(InputStream is) throws IOException,
+					public MoneyPostResponse convert(InputStream is) throws IOException,
 							JsonFormatException {
-						return MoneyPaymentResponseGen.get(is);
+						return MoneyPostResponseGen.get(is);
 					}
 				});
 			}
@@ -325,11 +325,76 @@ public class Zaim {
 		/**
 		 * Money payment api.
 		 * @param arg
-		 * @return list api
+		 * @return payment api
 		 * @author vvakame
 		 */
 		public Payment payment(MoneyPaymentArgument arg) {
 			return new Payment(arg);
+		}
+
+
+		/**
+		 * Money income api.
+		 * @author vvakame
+		 */
+		public class Income {
+
+			MoneyIncomeArgument arg;
+
+
+			private Income(MoneyIncomeArgument arg) {
+				if (arg == null) {
+					throw new NullPointerException("argment is reqruired.");
+				} else {
+					this.arg = arg;
+				}
+			}
+
+			/**
+			 * Get money list api.
+			 * @param listener
+			 * @author vvakame
+			 */
+			public void execute(ZaimListener<MoneyPostResponse> listener) {
+				if (listener == null) {
+					throw new NullPointerException("listener is required");
+				}
+
+				Map<String, String> params = new HashMap<String, String>();
+				// required
+				params.put("category_id", String.valueOf(arg.getCategoryId()));
+				params.put("amount", String.valueOf(arg.getAmount()));
+				params.put("date", String.valueOf(arg.getDate()));
+				// optional
+				if (arg.getToAccountId() != null) {
+					params.put("to_account_id", String.valueOf(arg.getToAccountId()));
+				}
+				if (arg.getComment() != null) {
+					params.put("comment", arg.getComment());
+				}
+
+				HttpURLConnection connection = connector.doPost("/v2/home/money/income", params);
+
+				doCallback(connection, listener, new ResponseConverter<MoneyPostResponse>() {
+
+					@Override
+					public MoneyPostResponse convert(InputStream is) throws IOException,
+							JsonFormatException {
+						return MoneyPostResponseGen.get(is);
+					}
+				});
+			}
+		}
+
+
+		/**
+		 * Money income api.
+		 * @param arg
+		 * @return income api
+		 * @author vvakame
+		 */
+		public Income income(MoneyIncomeArgument arg) {
+			return new Income(arg);
 		}
 	}
 

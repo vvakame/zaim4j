@@ -9,7 +9,7 @@ import net.vvakame.util.jsonpullparser.annotation.JsonModel;
  * @author vvakame
  */
 @JsonModel(decamelize = true, genToPackagePrivate = true, treatUnknownKeyAsError = true)
-public class MoneyPaymentResponse {
+public class MoneyPostResponse {
 
 	@JsonKey
 	MoneyStamps stamps;
