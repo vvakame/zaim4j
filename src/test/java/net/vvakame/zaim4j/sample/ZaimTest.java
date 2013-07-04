@@ -8,6 +8,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import net.vvakame.util.jsonpullparser.JsonFormatException;
+import net.vvakame.zaim4j.CategoryListResponse;
 import net.vvakame.zaim4j.ErrorResponse;
 import net.vvakame.zaim4j.MoneyIncomeInsertArgument;
 import net.vvakame.zaim4j.MoneyListResponse;
@@ -383,6 +384,39 @@ public class ZaimTest {
 				});
 			assertThat(holder.getObject(), notNullValue());
 		}
+	}
+
+	/**
+	 * Test for {@link net.vvakame.zaim4j.Zaim.Money.Transfer.Insert#execute(ZaimListener)}.
+	 * @throws IOException
+	 * @throws JsonFormatException
+	 * @author vvakame
+	 */
+	@Test
+	public void category_list() throws IOException, JsonFormatException {
+		Zaim zaim = getZaimInstance();
+
+		final Holder<CategoryListResponse> holder = new Holder<CategoryListResponse>();
+		zaim.category().list().execute(new ZaimListener<CategoryListResponse>() {
+
+			@Override
+			public void onSuccess(CategoryListResponse success) {
+				assertThat(success.getRequested(), not(0L));
+				assertThat(success.getCategories().size(), not(0));
+				holder.ok(success);
+			}
+
+			@Override
+			public void onFailure(ErrorResponse failure) {
+				fail(failure.getMessage());
+			}
+
+			@Override
+			public void onError(Exception e) {
+				throw new RuntimeException(e);
+			}
+		});
+		assertThat(holder.getObject(), notNullValue());
 	}
 
 	Zaim getZaimInstance() throws IOException, JsonFormatException {

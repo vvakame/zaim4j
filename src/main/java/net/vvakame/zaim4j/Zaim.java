@@ -957,17 +957,82 @@ public class Zaim {
 	}
 
 	/**
-	 * Account API.
-	 * @author vvakame
-	 */
-	public class Account {
-	}
-
-	/**
 	 * Category API.
 	 * @author vvakame
 	 */
 	public class Category {
+
+		private Category() {
+		}
+
+
+		/**
+		 * Category list API.
+		 * @author vvakame
+		 */
+		public class List {
+
+			MoneyMode arg;
+
+
+			// TODO transfer は取らない…
+			private List(MoneyMode arg) {
+				this.arg = arg;
+			}
+
+			/**
+			 * Get category list api.
+			 * @param listener
+			 * @author vvakame
+			 */
+			public void execute(ZaimListener<CategoryListResponse> listener) {
+				if (listener == null) {
+					throw new NullPointerException("listener is required");
+				}
+
+				Map<String, String> params = new HashMap<String, String>();
+				if (arg != null) {
+					params.put("mode", arg.name().toLowerCase());
+				}
+				HttpURLConnection connection = connector.doGet("/v2/home/category", params);
+
+				doCallback(connection, listener, new ResponseConverter<CategoryListResponse>() {
+
+					@Override
+					public CategoryListResponse convert(InputStream is) throws IOException,
+							JsonFormatException {
+						return CategoryListResponseGen.get(is);
+					}
+				});
+			}
+		}
+
+
+		/**
+		 * Category list api.
+		 * @param arg
+		 * @return list api
+		 * @author vvakame
+		 */
+		public List list(MoneyMode arg) {
+			return new List(arg);
+		}
+
+		/**
+		 * Category list api.
+		 * @return list api
+		 * @author vvakame
+		 */
+		public List list() {
+			return new List(null);
+		}
+	}
+
+	/**
+	 * Account API.
+	 * @author vvakame
+	 */
+	public class Account {
 	}
 
 	/**
