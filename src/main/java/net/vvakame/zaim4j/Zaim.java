@@ -974,11 +974,10 @@ public class Zaim {
 		 */
 		public class List {
 
-			MoneyMode arg;
+			ModeArg arg;
 
 
-			// TODO transfer は取らない…
-			private List(MoneyMode arg) {
+			private List(ModeArg arg) {
 				this.arg = arg;
 			}
 
@@ -1016,7 +1015,7 @@ public class Zaim {
 		 * @return list api
 		 * @author vvakame
 		 */
-		public List list(MoneyMode arg) {
+		public List list(ModeArg arg) {
 			return new List(arg);
 		}
 
@@ -1046,11 +1045,10 @@ public class Zaim {
 		 */
 		public class List {
 
-			MoneyMode arg;
+			ModeArg arg;
 
 
-			// TODO transfer は取らない…
-			private List(MoneyMode arg) {
+			private List(ModeArg arg) {
 				this.arg = arg;
 			}
 
@@ -1088,7 +1086,7 @@ public class Zaim {
 		 * @return list api
 		 * @author vvakame
 		 */
-		public List list(MoneyMode arg) {
+		public List list(ModeArg arg) {
 			return new List(arg);
 		}
 
@@ -1118,11 +1116,10 @@ public class Zaim {
 		 */
 		public class List {
 
-			MoneyMode arg;
+			ModeArg arg;
 
 
-			// TODO transfer は取らない…
-			private List(MoneyMode arg) {
+			private List(ModeArg arg) {
 				this.arg = arg;
 			}
 
@@ -1160,7 +1157,7 @@ public class Zaim {
 		 * @return list api
 		 * @author vvakame
 		 */
-		public List list(MoneyMode arg) {
+		public List list(ModeArg arg) {
 			return new List(arg);
 		}
 
