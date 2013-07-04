@@ -10,4 +10,5 @@ eclipse.lib/
 
 # settings
 src/test/resources/zaim-oauth.properties
+src/test/resources/valid-oauthToken.json
 

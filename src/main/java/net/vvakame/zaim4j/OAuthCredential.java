@@ -81,6 +81,7 @@ public class OAuthCredential implements Serializable {
 			Builder builder = new Builder(configuration);
 			try {
 				builder.credential = OAuthCredentialGen.get(json);
+				builder.credential.configuration = configuration;
 			} catch (IOException e) {
 				throw new RuntimeException(e);
 			}

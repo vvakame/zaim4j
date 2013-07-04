@@ -2,10 +2,13 @@ package net.vvakame.zaim4j;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.util.HashMap;
 import java.util.Map;
+
+import net.vvakame.util.jsonpullparser.JsonFormatException;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -47,18 +50,17 @@ public class OAuthConnectorTest {
 	 * Test for use {@link OAuthConnector#exec(net.vvakame.zaim4j.OAuthConnector.ProcessType, String, String, Map, Map)}.
 	 * @throws IOException
 	 * @author vvakame
+	 * @throws JsonFormatException 
 	 */
 	@Test
-	@Ignore("zaim-oauth.properties is not committed")
-	public void callAPI() throws IOException {
+	@Ignore("zaim-oauth.properties and valid-oauthToken.json are not committed")
+	public void callAPI() throws IOException, JsonFormatException {
 		OAuthConfiguration configuration =
 				OAuthConfiguration.Builder.fromProperties("/zaim-oauth.properties").build();
 
-		OAuthCredential credential = OAuthCredential.Builder.newBuild(configuration).build();
-		credential.oauthToken =
-				"1rQil5UlpfJpT4lmAseJMywDDMdGeav0fpe3TI1Ki4uMLWa6Ts0rhvGIOdozAB3qvhMEmWBAks";
-		credential.oauthTokenSecret =
-				"GJX68AiJYyaGKFX74EMrorz2MTbTndhwj9mUKyHhVTNdtFehINXjLOGaQIeGJpfLehIK1Y";
+		InputStream is = OAuthConnectorTest.class.getResourceAsStream("/valid-oauthToken.json");
+		String json = OAuthConnector.streamToString(is);
+		OAuthCredential credential = OAuthCredential.Builder.newBuild(configuration, json).build();
 		OAuthConnector connector = new OAuthConnector(configuration, credential);
 
 		{
@@ -72,6 +74,14 @@ public class OAuthConnectorTest {
 			params.put("mode", "payment");
 			HttpURLConnection connection = connector.doGet("/v2/home/genre", params);
 			System.out.println(OAuthConnector.connectionToString(connection));
+		}
+		{
+			HttpURLConnection connection = connector.doGet("/v2/home/account", null);
+			System.out.println(OAuthConnector.connectionToString(connection));
+		}
+		{
+			HttpURLConnection connection = connector.doGet("/v2/account", null);
+			System.out.println("other account " + OAuthConnector.connectionToString(connection));
 		}
 	}
 }
