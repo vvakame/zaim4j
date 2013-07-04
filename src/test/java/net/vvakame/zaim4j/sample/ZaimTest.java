@@ -21,6 +21,7 @@ import net.vvakame.zaim4j.MoneyTransferInsertArgument;
 import net.vvakame.zaim4j.MoneyUpdateArgument;
 import net.vvakame.zaim4j.OAuthConfiguration;
 import net.vvakame.zaim4j.OAuthCredential;
+import net.vvakame.zaim4j.OtherAccountListResponse;
 import net.vvakame.zaim4j.UserVerifyResponse;
 import net.vvakame.zaim4j.Zaim;
 import net.vvakame.zaim4j.Zaim.ZaimListener;
@@ -438,6 +439,39 @@ public class ZaimTest {
 			public void onSuccess(GenreListResponse success) {
 				assertThat(success.getRequested(), not(0L));
 				assertThat(success.getGenres().size(), not(0));
+				holder.ok(success);
+			}
+
+			@Override
+			public void onFailure(ErrorResponse failure) {
+				fail(failure.getMessage());
+			}
+
+			@Override
+			public void onError(Exception e) {
+				throw new RuntimeException(e);
+			}
+		});
+		assertThat(holder.getObject(), notNullValue());
+	}
+
+	/**
+	 * Test for {@link net.vvakame.zaim4j.Zaim.Other.Account.List#execute(ZaimListener)}.
+	 * @throws IOException
+	 * @throws JsonFormatException
+	 * @author vvakame
+	 */
+	@Test
+	public void other_account_list() throws IOException, JsonFormatException {
+		Zaim zaim = getZaimInstance();
+
+		final Holder<OtherAccountListResponse> holder = new Holder<OtherAccountListResponse>();
+		zaim.other().account().list().execute(new ZaimListener<OtherAccountListResponse>() {
+
+			@Override
+			public void onSuccess(OtherAccountListResponse success) {
+				assertThat(success.getRequested(), not(0L));
+				assertThat(success.getAccounts().size(), not(0));
 				holder.ok(success);
 			}
 

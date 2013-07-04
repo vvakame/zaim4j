@@ -3,6 +3,8 @@ package net.vvakame.zaim4j;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -1178,5 +1180,74 @@ public class Zaim {
 	 */
 	public class Other {
 
+		/**
+		 * Account list API.
+		 * @author vvakame
+		 */
+		public class Account {
+
+			/**
+			 * Account list API.
+			 * @author vvakame
+			 */
+			public class List {
+
+				private List() {
+				}
+
+				/**
+				 * Get account list api.
+				 * @param listener
+				 * @author vvakame
+				 */
+				public void execute(ZaimListener<OtherAccountListResponse> listener) {
+					if (listener == null) {
+						throw new NullPointerException("listener is required");
+					}
+
+					String urlStr =
+							connector.configuration.getBaseUrl() + "/v2/account".substring(1);
+					try {
+						URL url = new URL(urlStr);
+						HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+						connection.setRequestMethod("GET");
+
+						doCallback(connection, listener,
+								new ResponseConverter<OtherAccountListResponse>() {
+
+									@Override
+									public OtherAccountListResponse convert(InputStream is)
+											throws IOException, JsonFormatException {
+										return OtherAccountListResponseGen.get(is);
+									}
+								});
+					} catch (MalformedURLException e) {
+						listener.onError(e);
+					} catch (IOException e) {
+						listener.onError(e);
+					}
+				}
+			}
+
+
+			/**
+			 * Account list api.
+			 * @return list api
+			 * @author vvakame
+			 */
+			public List list() {
+				return new List();
+			}
+		}
+
+
+		/**
+		 * Account list api.
+		 * @return list api
+		 * @author vvakame
+		 */
+		public Account account() {
+			return new Account();
+		}
 	}
 }
