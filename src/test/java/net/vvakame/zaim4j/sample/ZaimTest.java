@@ -14,6 +14,7 @@ import net.vvakame.zaim4j.MoneyPostResponse;
 import net.vvakame.zaim4j.MoneyTransferArgument;
 import net.vvakame.zaim4j.OAuthConfiguration;
 import net.vvakame.zaim4j.OAuthCredential;
+import net.vvakame.zaim4j.UserVerifyResponse;
 import net.vvakame.zaim4j.Zaim;
 import net.vvakame.zaim4j.Zaim.ZaimListener;
 
@@ -29,6 +30,41 @@ import static org.junit.Assert.*;
  * @author vvakame
  */
 public class ZaimTest {
+
+	/**
+	 * Test for {@link net.vvakame.zaim4j.Zaim.User.Verify#execute(ZaimListener)}.
+	 * @throws IOException
+	 * @throws JsonFormatException
+	 * @author vvakame
+	 */
+	@Test
+	public void user_verify() throws IOException, JsonFormatException {
+		Zaim zaim = getZaimInstance();
+
+		{
+			final Checker checker = new Checker();
+			zaim.user().verify().execute(new ZaimListener<UserVerifyResponse>() {
+
+				@Override
+				public void onSuccess(UserVerifyResponse success) {
+					assertThat(success.getRequested(), not(0L));
+					assertThat(success.getMe(), notNullValue());
+					checker.ok();
+				}
+
+				@Override
+				public void onFailure(ErrorResponse failure) {
+					fail(failure.getMessage());
+				}
+
+				@Override
+				public void onError(Exception e) {
+					throw new RuntimeException(e);
+				}
+			});
+			assertThat(checker.isOk(), is(true));
+		}
+	}
 
 	/**
 	 * Test for {@link net.vvakame.zaim4j.Zaim.Money.List#execute(ZaimListener)}.

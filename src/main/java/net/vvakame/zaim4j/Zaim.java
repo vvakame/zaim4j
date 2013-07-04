@@ -163,6 +163,52 @@ public class Zaim {
 	 * @author vvakame
 	 */
 	public class User {
+
+		private User() {
+		}
+
+
+		/**
+		 * User verify API.
+		 * @author vvakame
+		 */
+		public class Verify {
+
+			private Verify() {
+			}
+
+			/**
+			 * Get user verify api.
+			 * @param listener
+			 * @author vvakame
+			 */
+			public void execute(ZaimListener<UserVerifyResponse> listener) {
+				if (listener == null) {
+					throw new NullPointerException("listener is required");
+				}
+
+				HttpURLConnection connection = connector.doGet("/v2/home/user/verify", null);
+
+				doCallback(connection, listener, new ResponseConverter<UserVerifyResponse>() {
+
+					@Override
+					public UserVerifyResponse convert(InputStream is) throws IOException,
+							JsonFormatException {
+						return UserVerifyResponseGen.get(is);
+					}
+				});
+			}
+		}
+
+
+		/**
+		 * user verify api.
+		 * @return verify api
+		 * @author vvakame
+		 */
+		public Verify verify() {
+			return new Verify();
+		}
 	}
 
 	/**

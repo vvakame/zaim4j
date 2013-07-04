@@ -18,7 +18,9 @@ public enum MoneyMode {
 	/** Payment */
 	Payment,
 	/** Income */
-	Income;
+	Income,
+	/** Transfer */
+	Transfer, ;
 
 	static class MoneyModeConverter extends TokenConverter<MoneyMode> {
 
