@@ -259,6 +259,78 @@ public class Zaim {
 		public List list() {
 			return new List(null);
 		}
+
+
+		/**
+		 * Money payment api.
+		 * @author vvakame
+		 */
+		public class Payment {
+
+			MoneyPaymentArgument arg;
+
+
+			private Payment(MoneyPaymentArgument arg) {
+				if (arg == null) {
+					throw new NullPointerException("argment is reqruired.");
+				} else {
+					this.arg = arg;
+				}
+			}
+
+			/**
+			 * Get money list api.
+			 * @param listener
+			 * @author vvakame
+			 */
+			public void execute(ZaimListener<MoneyPaymentResponse> listener) {
+				if (listener == null) {
+					throw new NullPointerException("listener is required");
+				}
+
+				Map<String, String> params = new HashMap<String, String>();
+				// required
+				params.put("category_id", String.valueOf(arg.getCategoryId()));
+				params.put("genre_id", String.valueOf(arg.getGenreId()));
+				params.put("amount", String.valueOf(arg.getAmount()));
+				params.put("date", String.valueOf(arg.getDate()));
+				// optional
+				if (arg.getFromAccountId() != null) {
+					params.put("from_account_id", String.valueOf(arg.getFromAccountId()));
+				}
+				if (arg.getComment() != null) {
+					params.put("comment", arg.getComment());
+				}
+				if (arg.getName() != null) {
+					params.put("name", arg.getName());
+				}
+				if (arg.getPlace() != null) {
+					params.put("place", arg.getPlace());
+				}
+
+				HttpURLConnection connection = connector.doPost("/v2/home/money/payment", params);
+
+				doCallback(connection, listener, new ResponseConverter<MoneyPaymentResponse>() {
+
+					@Override
+					public MoneyPaymentResponse convert(InputStream is) throws IOException,
+							JsonFormatException {
+						return MoneyPaymentResponseGen.get(is);
+					}
+				});
+			}
+		}
+
+
+		/**
+		 * Money payment api.
+		 * @param arg
+		 * @return list api
+		 * @author vvakame
+		 */
+		public Payment payment(MoneyPaymentArgument arg) {
+			return new Payment(arg);
+		}
 	}
 
 	/**
