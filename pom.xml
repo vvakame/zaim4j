@@ -3,7 +3,7 @@
 
 	<groupId>net.vvakame</groupId>
 	<artifactId>zaim4j</artifactId>
-	<version>1.0.1-SNAPSHOT</version>
+	<version>1.0.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>Zaim for Java</name>
