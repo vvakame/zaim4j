@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.ProtocolException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -168,6 +169,9 @@ public class Zaim {
 
 	<T>void doCallback(HttpURLConnection connection, ZaimListener<T> listener,
 			ResponseConverter<T> converter) {
+		if (listener == null) {
+			throw new NullPointerException("listener is required. or use other execute method.");
+		}
 
 		try {
 			final int responseCode = connection.getResponseCode();
@@ -184,6 +188,20 @@ public class Zaim {
 			listener.onError(e);
 		} catch (JsonFormatException e) {
 			listener.onError(e);
+		}
+	}
+
+	<T>ZaimResult<T> getResult(HttpURLConnection connection, ResponseConverter<T> converter)
+			throws IllegalAccessException, IOException, JsonFormatException {
+		final int responseCode = connection.getResponseCode();
+		if (responseCode == 200) {
+			return ZaimResult.right(converter.convert(connection.getInputStream()));
+		} else if (responseCode == 401) {
+			String message = OAuthConnector.streamToString(connection.getErrorStream());
+			throw new IllegalAccessException(message);
+		} else {
+			System.err.println("status code:" + connection.getResponseCode());
+			return ZaimResult.left(ErrorResponseGen.get(connection.getErrorStream()));
 		}
 	}
 
@@ -204,6 +222,9 @@ public class Zaim {
 		 */
 		public class Verify {
 
+			static final String API_URL = "/v2/home/user/verify";
+
+
 			private Verify() {
 			}
 
@@ -213,12 +234,8 @@ public class Zaim {
 			 * @author vvakame
 			 */
 			public void execute(ZaimListener<UserVerifyResponse> listener) {
-				if (listener == null) {
-					throw new NullPointerException("listener is required");
-				}
 
-				HttpURLConnection connection = connector.doGet("/v2/home/user/verify", null);
-
+				HttpURLConnection connection = doRequest();
 				doCallback(connection, listener, new ResponseConverter<UserVerifyResponse>() {
 
 					@Override
@@ -227,6 +244,32 @@ public class Zaim {
 						return UserVerifyResponseGen.get(is);
 					}
 				});
+			}
+
+			/**
+			 * Get user verify api.
+			 * @return result
+			 * @author vvakame
+			 * @throws JsonFormatException 
+			 * @throws IOException 
+			 * @throws IllegalAccessException 
+			 */
+			public ZaimResult<UserVerifyResponse> execute() throws IllegalAccessException,
+					IOException, JsonFormatException {
+
+				HttpURLConnection connection = doRequest();
+				return getResult(connection, new ResponseConverter<UserVerifyResponse>() {
+
+					@Override
+					public UserVerifyResponse convert(InputStream is) throws IOException,
+							JsonFormatException {
+						return UserVerifyResponseGen.get(is);
+					}
+				});
+			}
+
+			HttpURLConnection doRequest() {
+				return connector.doGet(API_URL, null);
 			}
 		}
 
@@ -257,6 +300,8 @@ public class Zaim {
 		 */
 		public class List {
 
+			private static final String API_URL = "/v2/home/money";
+
 			MoneyListArgument arg;
 
 
@@ -274,10 +319,39 @@ public class Zaim {
 			 * @author vvakame
 			 */
 			public void execute(ZaimListener<MoneyListResponse> listener) {
-				if (listener == null) {
-					throw new NullPointerException("listener is required");
-				}
+				HttpURLConnection connection = doRequest();
+				doCallback(connection, listener, new ResponseConverter<MoneyListResponse>() {
 
+					@Override
+					public MoneyListResponse convert(InputStream is) throws IOException,
+							JsonFormatException {
+						return MoneyListResponseGen.get(is);
+					}
+				});
+			}
+
+			/**
+			 * Get money list api.
+			 * @author vvakame
+			 * @return result
+			 * @throws JsonFormatException 
+			 * @throws IOException 
+			 * @throws IllegalAccessException 
+			 */
+			public ZaimResult<MoneyListResponse> execute() throws IllegalAccessException,
+					IOException, JsonFormatException {
+				HttpURLConnection connection = doRequest();
+				return getResult(connection, new ResponseConverter<MoneyListResponse>() {
+
+					@Override
+					public MoneyListResponse convert(InputStream is) throws IOException,
+							JsonFormatException {
+						return MoneyListResponseGen.get(is);
+					}
+				});
+			}
+
+			HttpURLConnection doRequest() {
 				Map<String, String> params = new HashMap<String, String>();
 				if (arg.getCategoryId() != null) {
 					params.put("category_id", String.valueOf(arg.getCategoryId()));
@@ -303,16 +377,7 @@ public class Zaim {
 				if (arg.getLimit() != null) {
 					params.put("limit", String.valueOf(arg.getLimit()));
 				}
-				HttpURLConnection connection = connector.doGet("/v2/home/money", params);
-
-				doCallback(connection, listener, new ResponseConverter<MoneyListResponse>() {
-
-					@Override
-					public MoneyListResponse convert(InputStream is) throws IOException,
-							JsonFormatException {
-						return MoneyListResponseGen.get(is);
-					}
-				});
+				return connector.doGet(API_URL, params);
 			}
 		}
 
@@ -373,10 +438,40 @@ public class Zaim {
 				 * @author vvakame
 				 */
 				public void execute(ZaimListener<MoneyPostInsertResponse> listener) {
-					if (listener == null) {
-						throw new NullPointerException("listener is required");
-					}
+					HttpURLConnection connection = doRequest();
+					doCallback(connection, listener,
+							new ResponseConverter<MoneyPostInsertResponse>() {
 
+								@Override
+								public MoneyPostInsertResponse convert(InputStream is)
+										throws IOException, JsonFormatException {
+									return MoneyPostInsertResponseGen.get(is);
+								}
+							});
+				}
+
+				/**
+				 * Money payment insert api.
+				 * @return result
+				 * @author vvakame
+				 * @throws JsonFormatException 
+				 * @throws IOException 
+				 * @throws IllegalAccessException 
+				 */
+				public ZaimResult<MoneyPostInsertResponse> execute() throws IllegalAccessException,
+						IOException, JsonFormatException {
+					HttpURLConnection connection = doRequest();
+					return getResult(connection, new ResponseConverter<MoneyPostInsertResponse>() {
+
+						@Override
+						public MoneyPostInsertResponse convert(InputStream is) throws IOException,
+								JsonFormatException {
+							return MoneyPostInsertResponseGen.get(is);
+						}
+					});
+				}
+
+				HttpURLConnection doRequest() {
 					Map<String, String> params = new HashMap<String, String>();
 					// required
 					params.put("category_id", String.valueOf(arg.getCategoryId()));
@@ -397,19 +492,8 @@ public class Zaim {
 						params.put("place", arg.getPlace());
 					}
 
-					HttpURLConnection connection = connector.doPost(API_URL, params);
-
-					doCallback(connection, listener,
-							new ResponseConverter<MoneyPostInsertResponse>() {
-
-								@Override
-								public MoneyPostInsertResponse convert(InputStream is)
-										throws IOException, JsonFormatException {
-									return MoneyPostInsertResponseGen.get(is);
-								}
-							});
+					return connector.doPost(API_URL, params);
 				}
-
 			}
 
 
@@ -447,10 +531,42 @@ public class Zaim {
 				 * @author vvakame
 				 */
 				public void execute(ZaimListener<MoneyModifiedResponse> listener) {
-					if (listener == null) {
-						throw new NullPointerException("listener is required");
-					}
+					HttpURLConnection connection = doRequest();
 
+					doCallback(connection, listener,
+							new ResponseConverter<MoneyModifiedResponse>() {
+
+								@Override
+								public MoneyModifiedResponse convert(InputStream is)
+										throws IOException, JsonFormatException {
+									return MoneyModifiedResponseGen.get(is);
+								}
+							});
+				}
+
+				/**
+				 * Get money list api.
+				 * @return result
+				 * @author vvakame
+				 * @throws JsonFormatException 
+				 * @throws IOException 
+				 * @throws IllegalAccessException 
+				 */
+				public ZaimResult<MoneyModifiedResponse> execute() throws IllegalAccessException,
+						IOException, JsonFormatException {
+					HttpURLConnection connection = doRequest();
+
+					return getResult(connection, new ResponseConverter<MoneyModifiedResponse>() {
+
+						@Override
+						public MoneyModifiedResponse convert(InputStream is) throws IOException,
+								JsonFormatException {
+							return MoneyModifiedResponseGen.get(is);
+						}
+					});
+				}
+
+				HttpURLConnection doRequest() {
 					Map<String, String> params = new HashMap<String, String>();
 					// required
 					params.put("amount", String.valueOf(arg.getAmount()));
@@ -472,20 +588,8 @@ public class Zaim {
 						params.put("comment", arg.getComment());
 					}
 
-					HttpURLConnection connection =
-							connector.doPut(API_URL + "/" + arg.getId(), params);
-
-					doCallback(connection, listener,
-							new ResponseConverter<MoneyModifiedResponse>() {
-
-								@Override
-								public MoneyModifiedResponse convert(InputStream is)
-										throws IOException, JsonFormatException {
-									return MoneyModifiedResponseGen.get(is);
-								}
-							});
+					return connector.doPut(API_URL + "/" + arg.getId(), params);
 				}
-
 			}
 
 
@@ -519,12 +623,8 @@ public class Zaim {
 				 * @author vvakame
 				 */
 				public void execute(ZaimListener<MoneyModifiedResponse> listener) {
-					if (listener == null) {
-						throw new NullPointerException("listener is required");
-					}
 
-					HttpURLConnection connection = connector.doDelete(API_URL + "/" + id, null);
-
+					HttpURLConnection connection = doRequest();
 					doCallback(connection, listener,
 							new ResponseConverter<MoneyModifiedResponse>() {
 
@@ -534,6 +634,32 @@ public class Zaim {
 									return MoneyModifiedResponseGen.get(is);
 								}
 							});
+				}
+
+				/**
+				 * Get money list api.
+				 * @return result
+				 * @author vvakame
+				 * @throws JsonFormatException 
+				 * @throws IOException 
+				 * @throws IllegalAccessException 
+				 */
+				public ZaimResult<MoneyModifiedResponse> execute() throws IllegalAccessException,
+						IOException, JsonFormatException {
+
+					HttpURLConnection connection = doRequest();
+					return getResult(connection, new ResponseConverter<MoneyModifiedResponse>() {
+
+						@Override
+						public MoneyModifiedResponse convert(InputStream is) throws IOException,
+								JsonFormatException {
+							return MoneyModifiedResponseGen.get(is);
+						}
+					});
+				}
+
+				HttpURLConnection doRequest() {
+					return connector.doDelete(API_URL + "/" + id, null);
 				}
 			}
 
@@ -596,10 +722,42 @@ public class Zaim {
 				 * @author vvakame
 				 */
 				public void execute(ZaimListener<MoneyPostInsertResponse> listener) {
-					if (listener == null) {
-						throw new NullPointerException("listener is required");
-					}
 
+					HttpURLConnection connection = doRequest();
+					doCallback(connection, listener,
+							new ResponseConverter<MoneyPostInsertResponse>() {
+
+								@Override
+								public MoneyPostInsertResponse convert(InputStream is)
+										throws IOException, JsonFormatException {
+									return MoneyPostInsertResponseGen.get(is);
+								}
+							});
+				}
+
+				/**
+				 * Get money list api.
+				 * @return result
+				 * @author vvakame
+				 * @throws JsonFormatException 
+				 * @throws IOException 
+				 * @throws IllegalAccessException 
+				 */
+				public ZaimResult<MoneyPostInsertResponse> execute() throws IllegalAccessException,
+						IOException, JsonFormatException {
+
+					HttpURLConnection connection = doRequest();
+					return getResult(connection, new ResponseConverter<MoneyPostInsertResponse>() {
+
+						@Override
+						public MoneyPostInsertResponse convert(InputStream is) throws IOException,
+								JsonFormatException {
+							return MoneyPostInsertResponseGen.get(is);
+						}
+					});
+				}
+
+				HttpURLConnection doRequest() {
 					Map<String, String> params = new HashMap<String, String>();
 					// required
 					params.put("category_id", String.valueOf(arg.getCategoryId()));
@@ -613,17 +771,7 @@ public class Zaim {
 						params.put("comment", arg.getComment());
 					}
 
-					HttpURLConnection connection = connector.doPost(API_URL, params);
-
-					doCallback(connection, listener,
-							new ResponseConverter<MoneyPostInsertResponse>() {
-
-								@Override
-								public MoneyPostInsertResponse convert(InputStream is)
-										throws IOException, JsonFormatException {
-									return MoneyPostInsertResponseGen.get(is);
-								}
-							});
+					return connector.doPost(API_URL, params);
 				}
 			}
 
@@ -662,10 +810,42 @@ public class Zaim {
 				 * @author vvakame
 				 */
 				public void execute(ZaimListener<MoneyModifiedResponse> listener) {
-					if (listener == null) {
-						throw new NullPointerException("listener is required");
-					}
 
+					HttpURLConnection connection = doRequest();
+					doCallback(connection, listener,
+							new ResponseConverter<MoneyModifiedResponse>() {
+
+								@Override
+								public MoneyModifiedResponse convert(InputStream is)
+										throws IOException, JsonFormatException {
+									return MoneyModifiedResponseGen.get(is);
+								}
+							});
+				}
+
+				/**
+				 * Update income api.
+				 * @return result
+				 * @author vvakame
+				 * @throws IllegalAccessException 
+				 * @throws IOException 
+				 * @throws JsonFormatException 
+				 */
+				public ZaimResult<MoneyModifiedResponse> execute() throws IllegalAccessException,
+						IOException, JsonFormatException {
+
+					HttpURLConnection connection = doRequest();
+					return getResult(connection, new ResponseConverter<MoneyModifiedResponse>() {
+
+						@Override
+						public MoneyModifiedResponse convert(InputStream is) throws IOException,
+								JsonFormatException {
+							return MoneyModifiedResponseGen.get(is);
+						}
+					});
+				}
+
+				HttpURLConnection doRequest() {
 					Map<String, String> params = new HashMap<String, String>();
 					// required
 					params.put("amount", String.valueOf(arg.getAmount()));
@@ -687,18 +867,7 @@ public class Zaim {
 						params.put("comment", arg.getComment());
 					}
 
-					HttpURLConnection connection =
-							connector.doPut(API_URL + "/" + arg.getId(), params);
-
-					doCallback(connection, listener,
-							new ResponseConverter<MoneyModifiedResponse>() {
-
-								@Override
-								public MoneyModifiedResponse convert(InputStream is)
-										throws IOException, JsonFormatException {
-									return MoneyModifiedResponseGen.get(is);
-								}
-							});
+					return connector.doPut(API_URL + "/" + arg.getId(), params);
 				}
 			}
 
@@ -733,12 +902,8 @@ public class Zaim {
 				 * @author vvakame
 				 */
 				public void execute(ZaimListener<MoneyModifiedResponse> listener) {
-					if (listener == null) {
-						throw new NullPointerException("listener is required");
-					}
 
-					HttpURLConnection connection = connector.doDelete(API_URL + "/" + id, null);
-
+					HttpURLConnection connection = doRequest();
 					doCallback(connection, listener,
 							new ResponseConverter<MoneyModifiedResponse>() {
 
@@ -748,6 +913,32 @@ public class Zaim {
 									return MoneyModifiedResponseGen.get(is);
 								}
 							});
+				}
+
+				/**
+				 * Delete income api.
+				 * @return result
+				 * @author vvakame
+				 * @throws JsonFormatException 
+				 * @throws IOException 
+				 * @throws IllegalAccessException 
+				 */
+				public ZaimResult<MoneyModifiedResponse> execute() throws IllegalAccessException,
+						IOException, JsonFormatException {
+
+					HttpURLConnection connection = doRequest();
+					return getResult(connection, new ResponseConverter<MoneyModifiedResponse>() {
+
+						@Override
+						public MoneyModifiedResponse convert(InputStream is) throws IOException,
+								JsonFormatException {
+							return MoneyModifiedResponseGen.get(is);
+						}
+					});
+				}
+
+				HttpURLConnection doRequest() {
+					return connector.doDelete(API_URL + "/" + id, null);
 				}
 			}
 
@@ -810,10 +1001,42 @@ public class Zaim {
 				 * @author vvakame
 				 */
 				public void execute(ZaimListener<MoneyPostInsertResponse> listener) {
-					if (listener == null) {
-						throw new NullPointerException("listener is required");
-					}
 
+					HttpURLConnection connection = doRequest();
+					doCallback(connection, listener,
+							new ResponseConverter<MoneyPostInsertResponse>() {
+
+								@Override
+								public MoneyPostInsertResponse convert(InputStream is)
+										throws IOException, JsonFormatException {
+									return MoneyPostInsertResponseGen.get(is);
+								}
+							});
+				}
+
+				/**
+				 * Money transfer insert api.
+				 * @return result
+				 * @author vvakame
+				 * @throws JsonFormatException 
+				 * @throws IOException 
+				 * @throws IllegalAccessException 
+				 */
+				public ZaimResult<MoneyPostInsertResponse> execute() throws IllegalAccessException,
+						IOException, JsonFormatException {
+
+					HttpURLConnection connection = doRequest();
+					return getResult(connection, new ResponseConverter<MoneyPostInsertResponse>() {
+
+						@Override
+						public MoneyPostInsertResponse convert(InputStream is) throws IOException,
+								JsonFormatException {
+							return MoneyPostInsertResponseGen.get(is);
+						}
+					});
+				}
+
+				HttpURLConnection doRequest() {
 					Map<String, String> params = new HashMap<String, String>();
 					// required
 					params.put("amount", String.valueOf(arg.getAmount()));
@@ -825,17 +1048,7 @@ public class Zaim {
 						params.put("comment", arg.getComment());
 					}
 
-					HttpURLConnection connection = connector.doPost(API_URL, params);
-
-					doCallback(connection, listener,
-							new ResponseConverter<MoneyPostInsertResponse>() {
-
-								@Override
-								public MoneyPostInsertResponse convert(InputStream is)
-										throws IOException, JsonFormatException {
-									return MoneyPostInsertResponseGen.get(is);
-								}
-							});
+					return connector.doPost(API_URL, params);
 				}
 			}
 
@@ -874,10 +1087,42 @@ public class Zaim {
 				 * @author vvakame
 				 */
 				public void execute(ZaimListener<MoneyModifiedResponse> listener) {
-					if (listener == null) {
-						throw new NullPointerException("listener is required");
-					}
 
+					HttpURLConnection connection = doRequest();
+					doCallback(connection, listener,
+							new ResponseConverter<MoneyModifiedResponse>() {
+
+								@Override
+								public MoneyModifiedResponse convert(InputStream is)
+										throws IOException, JsonFormatException {
+									return MoneyModifiedResponseGen.get(is);
+								}
+							});
+				}
+
+				/**
+				 * Update transfer api.
+				 * @return result
+				 * @author vvakame
+				 * @throws JsonFormatException 
+				 * @throws IOException 
+				 * @throws IllegalAccessException 
+				 */
+				public ZaimResult<MoneyModifiedResponse> execute() throws IllegalAccessException,
+						IOException, JsonFormatException {
+
+					HttpURLConnection connection = doRequest();
+					return getResult(connection, new ResponseConverter<MoneyModifiedResponse>() {
+
+						@Override
+						public MoneyModifiedResponse convert(InputStream is) throws IOException,
+								JsonFormatException {
+							return MoneyModifiedResponseGen.get(is);
+						}
+					});
+				}
+
+				HttpURLConnection doRequest() {
 					Map<String, String> params = new HashMap<String, String>();
 					// required
 					params.put("amount", String.valueOf(arg.getAmount()));
@@ -899,18 +1144,7 @@ public class Zaim {
 						params.put("comment", arg.getComment());
 					}
 
-					HttpURLConnection connection =
-							connector.doPut(API_URL + "/" + arg.getId(), params);
-
-					doCallback(connection, listener,
-							new ResponseConverter<MoneyModifiedResponse>() {
-
-								@Override
-								public MoneyModifiedResponse convert(InputStream is)
-										throws IOException, JsonFormatException {
-									return MoneyModifiedResponseGen.get(is);
-								}
-							});
+					return connector.doPut(API_URL + "/" + arg.getId(), params);
 				}
 			}
 
@@ -945,12 +1179,8 @@ public class Zaim {
 				 * @author vvakame
 				 */
 				public void execute(ZaimListener<MoneyModifiedResponse> listener) {
-					if (listener == null) {
-						throw new NullPointerException("listener is required");
-					}
 
-					HttpURLConnection connection = connector.doDelete(API_URL + "/" + id, null);
-
+					HttpURLConnection connection = doRequest();
 					doCallback(connection, listener,
 							new ResponseConverter<MoneyModifiedResponse>() {
 
@@ -960,6 +1190,32 @@ public class Zaim {
 									return MoneyModifiedResponseGen.get(is);
 								}
 							});
+				}
+
+				/**
+				 * Delete transfer api.
+				 * @return result
+				 * @author vvakame
+				 * @throws JsonFormatException 
+				 * @throws IOException 
+				 * @throws IllegalAccessException 
+				 */
+				public ZaimResult<MoneyModifiedResponse> execute() throws IllegalAccessException,
+						IOException, JsonFormatException {
+
+					HttpURLConnection connection = doRequest();
+					return getResult(connection, new ResponseConverter<MoneyModifiedResponse>() {
+
+						@Override
+						public MoneyModifiedResponse convert(InputStream is) throws IOException,
+								JsonFormatException {
+							return MoneyModifiedResponseGen.get(is);
+						}
+					});
+				}
+
+				HttpURLConnection doRequest() {
+					return connector.doDelete(API_URL + "/" + id, null);
 				}
 			}
 
@@ -1002,6 +1258,8 @@ public class Zaim {
 		 */
 		public class List {
 
+			static final String API_URL = "/v2/home/category";
+
 			ModeArg arg;
 
 
@@ -1015,16 +1273,8 @@ public class Zaim {
 			 * @author vvakame
 			 */
 			public void execute(ZaimListener<CategoryListResponse> listener) {
-				if (listener == null) {
-					throw new NullPointerException("listener is required");
-				}
 
-				Map<String, String> params = new HashMap<String, String>();
-				if (arg != null) {
-					params.put("mode", arg.name().toLowerCase());
-				}
-				HttpURLConnection connection = connector.doGet("/v2/home/category", params);
-
+				HttpURLConnection connection = doRequest();
 				doCallback(connection, listener, new ResponseConverter<CategoryListResponse>() {
 
 					@Override
@@ -1033,6 +1283,37 @@ public class Zaim {
 						return CategoryListResponseGen.get(is);
 					}
 				});
+			}
+
+			/**
+			 * Get category list api.
+			 * @return result 
+			 * @author vvakame
+			 * @throws JsonFormatException 
+			 * @throws IOException 
+			 * @throws IllegalAccessException 
+			 */
+			public ZaimResult<CategoryListResponse> execute() throws IllegalAccessException,
+					IOException, JsonFormatException {
+
+				HttpURLConnection connection = doRequest();
+				return getResult(connection, new ResponseConverter<CategoryListResponse>() {
+
+					@Override
+					public CategoryListResponse convert(InputStream is) throws IOException,
+							JsonFormatException {
+						return CategoryListResponseGen.get(is);
+					}
+				});
+			}
+
+			HttpURLConnection doRequest() {
+				Map<String, String> params = new HashMap<String, String>();
+				if (arg != null) {
+					params.put("mode", arg.name().toLowerCase());
+				}
+				HttpURLConnection connection = connector.doGet(API_URL, params);
+				return connection;
 			}
 		}
 
@@ -1073,6 +1354,8 @@ public class Zaim {
 		 */
 		public class List {
 
+			static final String API_URL = "/v2/home/genre";
+
 			ModeArg arg;
 
 
@@ -1086,16 +1369,8 @@ public class Zaim {
 			 * @author vvakame
 			 */
 			public void execute(ZaimListener<GenreListResponse> listener) {
-				if (listener == null) {
-					throw new NullPointerException("listener is required");
-				}
 
-				Map<String, String> params = new HashMap<String, String>();
-				if (arg != null) {
-					params.put("mode", arg.name().toLowerCase());
-				}
-				HttpURLConnection connection = connector.doGet("/v2/home/genre", params);
-
+				HttpURLConnection connection = doRequest();
 				doCallback(connection, listener, new ResponseConverter<GenreListResponse>() {
 
 					@Override
@@ -1104,6 +1379,36 @@ public class Zaim {
 						return GenreListResponseGen.get(is);
 					}
 				});
+			}
+
+			/**
+			 * Get category list api.
+			 * @return result 
+			 * @author vvakame
+			 * @throws JsonFormatException 
+			 * @throws IOException 
+			 * @throws IllegalAccessException 
+			 */
+			public ZaimResult<GenreListResponse> execute() throws IllegalAccessException,
+					IOException, JsonFormatException {
+
+				HttpURLConnection connection = doRequest();
+				return getResult(connection, new ResponseConverter<GenreListResponse>() {
+
+					@Override
+					public GenreListResponse convert(InputStream is) throws IOException,
+							JsonFormatException {
+						return GenreListResponseGen.get(is);
+					}
+				});
+			}
+
+			HttpURLConnection doRequest() {
+				Map<String, String> params = new HashMap<String, String>();
+				if (arg != null) {
+					params.put("mode", arg.name().toLowerCase());
+				}
+				return connector.doGet(API_URL, params);
 			}
 		}
 
@@ -1144,6 +1449,8 @@ public class Zaim {
 		 */
 		public class List {
 
+			static final String API_URL = "/v2/home/account";
+
 			ModeArg arg;
 
 
@@ -1157,16 +1464,8 @@ public class Zaim {
 			 * @author vvakame
 			 */
 			public void execute(ZaimListener<AccountListResponse> listener) {
-				if (listener == null) {
-					throw new NullPointerException("listener is required");
-				}
 
-				Map<String, String> params = new HashMap<String, String>();
-				if (arg != null) {
-					params.put("mode", arg.name().toLowerCase());
-				}
-				HttpURLConnection connection = connector.doGet("/v2/home/account", params);
-
+				HttpURLConnection connection = doRequest();
 				doCallback(connection, listener, new ResponseConverter<AccountListResponse>() {
 
 					@Override
@@ -1175,6 +1474,36 @@ public class Zaim {
 						return AccountListResponseGen.get(is);
 					}
 				});
+			}
+
+			/**
+			 * Get account list api.
+			 * @return result
+			 * @author vvakame
+			 * @throws JsonFormatException 
+			 * @throws IOException 
+			 * @throws IllegalAccessException 
+			 */
+			public ZaimResult<AccountListResponse> execute() throws IllegalAccessException,
+					IOException, JsonFormatException {
+
+				HttpURLConnection connection = doRequest();
+				return getResult(connection, new ResponseConverter<AccountListResponse>() {
+
+					@Override
+					public AccountListResponse convert(InputStream is) throws IOException,
+							JsonFormatException {
+						return AccountListResponseGen.get(is);
+					}
+				});
+			}
+
+			HttpURLConnection doRequest() {
+				Map<String, String> params = new HashMap<String, String>();
+				if (arg != null) {
+					params.put("mode", arg.name().toLowerCase());
+				}
+				return connector.doGet(API_URL, params);
 			}
 		}
 
@@ -1226,16 +1555,8 @@ public class Zaim {
 				 * @author vvakame
 				 */
 				public void execute(ZaimListener<OtherAccountListResponse> listener) {
-					if (listener == null) {
-						throw new NullPointerException("listener is required");
-					}
-
-					String urlStr =
-							connector.configuration.getBaseUrl() + "/v2/account".substring(1);
 					try {
-						URL url = new URL(urlStr);
-						HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-						connection.setRequestMethod("GET");
+						HttpURLConnection connection = doRequest();
 
 						doCallback(connection, listener,
 								new ResponseConverter<OtherAccountListResponse>() {
@@ -1251,6 +1572,38 @@ public class Zaim {
 					} catch (IOException e) {
 						listener.onError(e);
 					}
+				}
+
+				/**
+				 * Get account list api.
+				 * @return result
+				 * @author vvakame
+				 * @throws JsonFormatException 
+				 * @throws IOException 
+				 * @throws IllegalAccessException 
+				 */
+				public ZaimResult<OtherAccountListResponse> execute()
+						throws IllegalAccessException, IOException, JsonFormatException {
+
+					HttpURLConnection connection = doRequest();
+					return getResult(connection, new ResponseConverter<OtherAccountListResponse>() {
+
+						@Override
+						public OtherAccountListResponse convert(InputStream is) throws IOException,
+								JsonFormatException {
+							return OtherAccountListResponseGen.get(is);
+						}
+					});
+				}
+
+				HttpURLConnection doRequest() throws MalformedURLException, IOException,
+						ProtocolException {
+					String urlStr =
+							connector.configuration.getBaseUrl() + "/v2/account".substring(1);
+					URL url = new URL(urlStr);
+					HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+					connection.setRequestMethod("GET");
+					return connection;
 				}
 			}
 
@@ -1297,17 +1650,8 @@ public class Zaim {
 				 * @author vvakame
 				 */
 				public void execute(ZaimListener<OtherCategoryListResponse> listener) {
-					if (listener == null) {
-						throw new NullPointerException("listener is required");
-					}
-
-					String urlStr =
-							connector.configuration.getBaseUrl() + "/v2/category".substring(1);
 					try {
-						URL url = new URL(urlStr);
-						HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-						connection.setRequestMethod("GET");
-
+						HttpURLConnection connection = doRequest();
 						doCallback(connection, listener,
 								new ResponseConverter<OtherCategoryListResponse>() {
 
@@ -1322,6 +1666,39 @@ public class Zaim {
 					} catch (IOException e) {
 						listener.onError(e);
 					}
+				}
+
+				/**
+				 * Get category list api.
+				 * @return result
+				 * @author vvakame
+				 * @throws JsonFormatException 
+				 * @throws IOException 
+				 * @throws IllegalAccessException 
+				 */
+				public ZaimResult<OtherCategoryListResponse> execute()
+						throws IllegalAccessException, IOException, JsonFormatException {
+
+					HttpURLConnection connection = doRequest();
+					return getResult(connection,
+							new ResponseConverter<OtherCategoryListResponse>() {
+
+								@Override
+								public OtherCategoryListResponse convert(InputStream is)
+										throws IOException, JsonFormatException {
+									return OtherCategoryListResponseGen.get(is);
+								}
+							});
+				}
+
+				HttpURLConnection doRequest() throws MalformedURLException, IOException,
+						ProtocolException {
+					String urlStr =
+							connector.configuration.getBaseUrl() + "/v2/category".substring(1);
+					URL url = new URL(urlStr);
+					HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+					connection.setRequestMethod("GET");
+					return connection;
 				}
 			}
 
@@ -1368,15 +1745,8 @@ public class Zaim {
 				 * @author vvakame
 				 */
 				public void execute(ZaimListener<OtherGenreListResponse> listener) {
-					if (listener == null) {
-						throw new NullPointerException("listener is required");
-					}
-
-					String urlStr = connector.configuration.getBaseUrl() + "/v2/genre".substring(1);
 					try {
-						URL url = new URL(urlStr);
-						HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-						connection.setRequestMethod("GET");
+						HttpURLConnection connection = doRequest();
 
 						doCallback(connection, listener,
 								new ResponseConverter<OtherGenreListResponse>() {
@@ -1392,6 +1762,37 @@ public class Zaim {
 					} catch (IOException e) {
 						listener.onError(e);
 					}
+				}
+
+				/**
+				 * Get genre list api.
+				 * @return result
+				 * @author vvakame
+				 * @throws JsonFormatException 
+				 * @throws IOException 
+				 * @throws IllegalAccessException 
+				 */
+				public ZaimResult<OtherGenreListResponse> execute() throws IllegalAccessException,
+						IOException, JsonFormatException {
+
+					HttpURLConnection connection = doRequest();
+					return getResult(connection, new ResponseConverter<OtherGenreListResponse>() {
+
+						@Override
+						public OtherGenreListResponse convert(InputStream is) throws IOException,
+								JsonFormatException {
+							return OtherGenreListResponseGen.get(is);
+						}
+					});
+				}
+
+				HttpURLConnection doRequest() throws MalformedURLException, IOException,
+						ProtocolException {
+					String urlStr = connector.configuration.getBaseUrl() + "/v2/genre".substring(1);
+					URL url = new URL(urlStr);
+					HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+					connection.setRequestMethod("GET");
+					return connection;
 				}
 			}
 
@@ -1438,17 +1839,8 @@ public class Zaim {
 				 * @author vvakame
 				 */
 				public void execute(ZaimListener<OtherCurrencyListResponse> listener) {
-					if (listener == null) {
-						throw new NullPointerException("listener is required");
-					}
-
-					String urlStr =
-							connector.configuration.getBaseUrl() + "/v2/currency".substring(1);
 					try {
-						URL url = new URL(urlStr);
-						HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-						connection.setRequestMethod("GET");
-
+						HttpURLConnection connection = doRequest();
 						doCallback(connection, listener,
 								new ResponseConverter<OtherCurrencyListResponse>() {
 
@@ -1463,6 +1855,39 @@ public class Zaim {
 					} catch (IOException e) {
 						listener.onError(e);
 					}
+				}
+
+				/**
+				 * Get currency list api.
+				 * @return result
+				 * @author vvakame
+				 * @throws JsonFormatException 
+				 * @throws IOException 
+				 * @throws IllegalAccessException 
+				 */
+				public ZaimResult<OtherCurrencyListResponse> execute()
+						throws IllegalAccessException, IOException, JsonFormatException {
+
+					HttpURLConnection connection = doRequest();
+					return getResult(connection,
+							new ResponseConverter<OtherCurrencyListResponse>() {
+
+								@Override
+								public OtherCurrencyListResponse convert(InputStream is)
+										throws IOException, JsonFormatException {
+									return OtherCurrencyListResponseGen.get(is);
+								}
+							});
+				}
+
+				HttpURLConnection doRequest() throws MalformedURLException, IOException,
+						ProtocolException {
+					String urlStr =
+							connector.configuration.getBaseUrl() + "/v2/currency".substring(1);
+					URL url = new URL(urlStr);
+					HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+					connection.setRequestMethod("GET");
+					return connection;
 				}
 			}
 
