@@ -578,8 +578,8 @@ public class Zaim {
 					if (arg.getToAccountId() != null) {
 						params.put("to_account_id", String.valueOf(arg.getToAccountId()));
 					}
-					if (arg.getGenre() != null) {
-						params.put("genre", String.valueOf(arg.getGenre()));
+					if (arg.getGenreId() != null) {
+						params.put("genre", String.valueOf(arg.getGenreId()));
 					}
 					if (arg.getCategoryId() != null) {
 						params.put("category_id", String.valueOf(arg.getCategoryId()));
@@ -857,8 +857,8 @@ public class Zaim {
 					if (arg.getToAccountId() != null) {
 						params.put("to_account_id", String.valueOf(arg.getToAccountId()));
 					}
-					if (arg.getGenre() != null) {
-						params.put("genre", String.valueOf(arg.getGenre()));
+					if (arg.getGenreId() != null) {
+						params.put("genre", String.valueOf(arg.getGenreId()));
 					}
 					if (arg.getCategoryId() != null) {
 						params.put("category_id", String.valueOf(arg.getCategoryId()));
@@ -1134,8 +1134,8 @@ public class Zaim {
 					if (arg.getToAccountId() != null) {
 						params.put("to_account_id", String.valueOf(arg.getToAccountId()));
 					}
-					if (arg.getGenre() != null) {
-						params.put("genre", String.valueOf(arg.getGenre()));
+					if (arg.getGenreId() != null) {
+						params.put("genre", String.valueOf(arg.getGenreId()));
 					}
 					if (arg.getCategoryId() != null) {
 						params.put("category_id", String.valueOf(arg.getCategoryId()));

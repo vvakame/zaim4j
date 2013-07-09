@@ -130,6 +130,7 @@ public class ZaimTest {
 		final long moneyId;
 		{ // insert
 			final Holder<MoneyPostInsertResponse> holder = new Holder<MoneyPostInsertResponse>();
+			@SuppressWarnings("deprecation")
 			MoneyPaymentInsertArgument argument =
 					new MoneyPaymentInsertArgument(101, 10103, 888, date);
 			zaim.money().payment().insert(argument)
@@ -223,6 +224,7 @@ public class ZaimTest {
 		final long moneyId;
 		{
 			final Holder<MoneyPostInsertResponse> holder = new Holder<MoneyPostInsertResponse>();
+			@SuppressWarnings("deprecation")
 			MoneyIncomeInsertArgument argument = new MoneyIncomeInsertArgument(11, 999, date);
 			zaim.money().income().insert(argument)
 				.execute(new ZaimListener<MoneyPostInsertResponse>() {

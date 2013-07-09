@@ -11,22 +11,13 @@ import net.vvakame.util.jsonpullparser.annotation.JsonModel;
  * @author vvakame
  */
 @JsonModel(decamelize = true, genToPackagePrivate = true, treatUnknownKeyAsError = true)
-public class GenreItem {
-
-	@JsonKey
-	long id;
-
-	@JsonKey
-	String name;
+public class GenreItem extends OtherGenreItem {
 
 	@JsonKey
 	long sort;
 
 	@JsonKey
 	long parentGenreId;
-
-	@JsonKey
-	long categoryId;
 
 	@JsonKey
 	long editFlag;
@@ -47,38 +38,6 @@ public class GenreItem {
 			throw new RuntimeException(e);
 		}
 		return writer.toString();
-	}
-
-	/**
-	 * @return the id
-	 * @category accessor
-	 */
-	public long getId() {
-		return id;
-	}
-
-	/**
-	 * @param id the id to set
-	 * @category accessor
-	 */
-	public void setId(long id) {
-		this.id = id;
-	}
-
-	/**
-	 * @return the name
-	 * @category accessor
-	 */
-	public String getName() {
-		return name;
-	}
-
-	/**
-	 * @param name the name to set
-	 * @category accessor
-	 */
-	public void setName(String name) {
-		this.name = name;
 	}
 
 	/**
@@ -111,22 +70,6 @@ public class GenreItem {
 	 */
 	public void setParentGenreId(long parentGenreId) {
 		this.parentGenreId = parentGenreId;
-	}
-
-	/**
-	 * @return the categoryId
-	 * @category accessor
-	 */
-	public long getCategoryId() {
-		return categoryId;
-	}
-
-	/**
-	 * @param categoryId the categoryId to set
-	 * @category accessor
-	 */
-	public void setCategoryId(long categoryId) {
-		this.categoryId = categoryId;
 	}
 
 	/**
