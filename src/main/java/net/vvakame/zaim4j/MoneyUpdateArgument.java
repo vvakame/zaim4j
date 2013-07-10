@@ -52,6 +52,17 @@ public class MoneyUpdateArgument {
 		this(money.getId(), amount, date);
 	}
 
+	/**
+	 * the constructor.
+	 * @param money
+	 * @param amount
+	 * @param date
+	 * @category constructor
+	 */
+	public MoneyUpdateArgument(MoneyInfo money, double amount, String date) {
+		this(money.getId(), amount, date);
+	}
+
 	@Override
 	public String toString() {
 		return "MoneyUpdateArgument [id=" + id + ", amount=" + amount + ", date=" + date

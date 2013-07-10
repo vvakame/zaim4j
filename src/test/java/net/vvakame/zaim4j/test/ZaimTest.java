@@ -5,15 +5,18 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import net.vvakame.util.jsonpullparser.JsonFormatException;
 import net.vvakame.zaim4j.AccountListResponse;
 import net.vvakame.zaim4j.CategoryListResponse;
-import net.vvakame.zaim4j.ErrorResponse;
 import net.vvakame.zaim4j.GenreListResponse;
 import net.vvakame.zaim4j.MoneyIncomeInsertArgument;
+import net.vvakame.zaim4j.MoneyInfo;
 import net.vvakame.zaim4j.MoneyListResponse;
+import net.vvakame.zaim4j.MoneyMode;
 import net.vvakame.zaim4j.MoneyModifiedResponse;
 import net.vvakame.zaim4j.MoneyPaymentInsertArgument;
 import net.vvakame.zaim4j.MoneyPostInsertResponse;
@@ -21,13 +24,17 @@ import net.vvakame.zaim4j.MoneyTransferInsertArgument;
 import net.vvakame.zaim4j.MoneyUpdateArgument;
 import net.vvakame.zaim4j.OAuthConfiguration;
 import net.vvakame.zaim4j.OAuthCredential;
+import net.vvakame.zaim4j.OtherAccountItem;
 import net.vvakame.zaim4j.OtherAccountListResponse;
+import net.vvakame.zaim4j.OtherCategoryItem;
 import net.vvakame.zaim4j.OtherCategoryListResponse;
 import net.vvakame.zaim4j.OtherCurrencyListResponse;
+import net.vvakame.zaim4j.OtherGenreItem;
 import net.vvakame.zaim4j.OtherGenreListResponse;
 import net.vvakame.zaim4j.UserVerifyResponse;
 import net.vvakame.zaim4j.Zaim;
 import net.vvakame.zaim4j.Zaim.ZaimListener;
+import net.vvakame.zaim4j.ZaimResult;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -40,80 +47,55 @@ import static org.junit.Assert.*;
  * Test for {@link Zaim}.
  * @author vvakame
  */
-@Ignore
+@Ignore("write actual data...")
 public class ZaimTest {
 
 	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
-	String date = sdf.format(new Date(new Date().getTime() + 5 * 24 * 60 * 60 * 1000));
+	String date = sdf.format(new Date(new Date().getTime() + 60 * 24 * 60 * 60 * 1000));
 
 
 	/**
 	 * Test for {@link net.vvakame.zaim4j.Zaim.User.Verify#execute(ZaimListener)}.
 	 * @throws IOException
 	 * @throws JsonFormatException
+	 * @throws IllegalAccessException 
 	 * @author vvakame
 	 */
 	@Test
-	public void user_verify() throws IOException, JsonFormatException {
+	public void user_verify() throws IOException, JsonFormatException, IllegalAccessException {
 		Zaim zaim = getZaimInstance();
 
-		final Holder<UserVerifyResponse> holder = new Holder<UserVerifyResponse>();
-		{
-			zaim.user().verify().execute(new ZaimListener<UserVerifyResponse>() {
-
-				@Override
-				public void onSuccess(UserVerifyResponse success) {
-					assertThat(success.getRequested(), not(0L));
-					assertThat(success.getMe(), notNullValue());
-					holder.ok(success);
-				}
-
-				@Override
-				public void onFailure(ErrorResponse failure) {
-					fail(failure.getMessage());
-				}
-
-				@Override
-				public void onError(Exception e) {
-					throw new RuntimeException(e);
-				}
-			});
-			assertThat(holder.getObject(), notNullValue());
-		}
+		ZaimResult<UserVerifyResponse> result = zaim.user().verify().execute();
+		assertThat(result.isSuccess(), is(true));
+		assertThat(result.getValue().getRequested(), not(0L));
+		assertThat(result.getValue().getMe(), notNullValue());
 	}
 
 	/**
 	 * Test for {@link net.vvakame.zaim4j.Zaim.Money.List#execute(ZaimListener)}.
 	 * @throws IOException
 	 * @throws JsonFormatException
+	 * @throws IllegalAccessException 
 	 * @author vvakame
 	 */
 	@Test
-	public void money_list() throws IOException, JsonFormatException {
+	public void money_list() throws IOException, JsonFormatException, IllegalAccessException {
 		Zaim zaim = getZaimInstance();
 
-		final Holder<MoneyListResponse> holder = new Holder<MoneyListResponse>();
-		zaim.money().list().execute(new ZaimListener<MoneyListResponse>() {
+		{
+			OtherGenreItem genreItem = getGenreListByMoneyMode(zaim, MoneyMode.Payment).get(0);
+			MoneyPaymentInsertArgument argument =
+					new MoneyPaymentInsertArgument(genreItem, 888, date);
+			ZaimResult<MoneyPostInsertResponse> result =
+					zaim.money().payment().insert(argument).execute();
+			assertThat(result.isSuccess(), is(true));
+		}
 
-			@Override
-			public void onSuccess(MoneyListResponse success) {
-				assertThat(success.getRequested(), not(0L));
-				assertThat(success.getMoney().size(), not(0));
-				holder.ok(success);
-			}
-
-			@Override
-			public void onFailure(ErrorResponse failure) {
-				fail(failure.getMessage());
-			}
-
-			@Override
-			public void onError(Exception e) {
-				throw new RuntimeException(e);
-			}
-		});
-		assertThat(holder.getObject(), notNullValue());
+		ZaimResult<MoneyListResponse> result = zaim.money().list().execute();
+		assertThat(result.isSuccess(), is(true));
+		assertThat(result.getValue().getRequested(), not(0L));
+		assertThat(result.getValue().getMoney().size(), not(0));
 	}
 
 	/**
@@ -121,93 +103,42 @@ public class ZaimTest {
 	 * @throws IOException
 	 * @throws JsonFormatException
 	 * @author vvakame
+	 * @throws IllegalAccessException 
 	 */
 	@Test
-	@Ignore("this test create actual data...")
-	public void money_payment() throws IOException, JsonFormatException {
+	public void money_payment() throws IOException, JsonFormatException, IllegalAccessException {
 		Zaim zaim = getZaimInstance();
 
-		final long moneyId;
+		final MoneyInfo money;
 		{ // insert
-			final Holder<MoneyPostInsertResponse> holder = new Holder<MoneyPostInsertResponse>();
-			@SuppressWarnings("deprecation")
+			OtherGenreItem genreItem = getGenreListByMoneyMode(zaim, MoneyMode.Payment).get(0);
 			MoneyPaymentInsertArgument argument =
-					new MoneyPaymentInsertArgument(101, 10103, 888, date);
-			zaim.money().payment().insert(argument)
-				.execute(new ZaimListener<MoneyPostInsertResponse>() {
+					new MoneyPaymentInsertArgument(genreItem, 888, date);
+			ZaimResult<MoneyPostInsertResponse> result =
+					zaim.money().payment().insert(argument).execute();
+			assertThat(result.isSuccess(), is(true));
+			assertThat(result.getValue().getRequested(), not(0L));
+			assertThat(result.getValue().getMoney(), notNullValue());
+			assertThat(result.getValue().getUser(), notNullValue());
 
-					@Override
-					public void onSuccess(MoneyPostInsertResponse success) {
-						assertThat(success.getRequested(), not(0L));
-						assertThat(success.getMoney(), notNullValue());
-						assertThat(success.getUser(), notNullValue());
-						holder.ok(success);
-					}
-
-					@Override
-					public void onFailure(ErrorResponse failure) {
-						fail(failure.getMessage());
-					}
-
-					@Override
-					public void onError(Exception e) {
-						throw new RuntimeException(e);
-					}
-				});
-			assertThat(holder.getObject(), notNullValue());
-			moneyId = holder.getObject().getMoney().getId();
+			money = result.getValue().getMoney();
 		}
 		{ // update
-			final Holder<MoneyModifiedResponse> holder = new Holder<MoneyModifiedResponse>();
-			@SuppressWarnings("deprecation")
-			MoneyUpdateArgument argument = new MoneyUpdateArgument(moneyId, 333, date);
-			zaim.money().payment().update(argument)
-				.execute(new ZaimListener<MoneyModifiedResponse>() {
-
-					@Override
-					public void onSuccess(MoneyModifiedResponse success) {
-						assertThat(success.getRequested(), not(0L));
-						assertThat(success.getMoney(), notNullValue());
-						assertThat(success.getUser(), notNullValue());
-						holder.ok(success);
-					}
-
-					@Override
-					public void onFailure(ErrorResponse failure) {
-						fail(failure.getMessage());
-					}
-
-					@Override
-					public void onError(Exception e) {
-						throw new RuntimeException(e);
-					}
-				});
-			assertThat(holder.getObject(), notNullValue());
+			MoneyUpdateArgument argument = new MoneyUpdateArgument(money, 333, date);
+			ZaimResult<MoneyModifiedResponse> result =
+					zaim.money().payment().update(argument).execute();
+			assertThat(result.isSuccess(), is(true));
+			assertThat(result.getValue().getRequested(), not(0L));
+			assertThat(result.getValue().getMoney(), notNullValue());
+			assertThat(result.getValue().getUser(), notNullValue());
 		}
 		{ // delete
-			final Holder<MoneyModifiedResponse> holder = new Holder<MoneyModifiedResponse>();
-			zaim.money().payment().delete(moneyId)
-				.execute(new ZaimListener<MoneyModifiedResponse>() {
-
-					@Override
-					public void onSuccess(MoneyModifiedResponse success) {
-						assertThat(success.getRequested(), not(0L));
-						assertThat(success.getMoney(), notNullValue());
-						assertThat(success.getUser(), notNullValue());
-						holder.ok(success);
-					}
-
-					@Override
-					public void onFailure(ErrorResponse failure) {
-						fail(failure.getMessage());
-					}
-
-					@Override
-					public void onError(Exception e) {
-						throw new RuntimeException(e);
-					}
-				});
-			assertThat(holder.getObject(), notNullValue());
+			ZaimResult<MoneyModifiedResponse> result =
+					zaim.money().payment().delete(money).execute();
+			assertThat(result.isSuccess(), is(true));
+			assertThat(result.getValue().getRequested(), not(0L));
+			assertThat(result.getValue().getMoney(), notNullValue());
+			assertThat(result.getValue().getUser(), notNullValue());
 		}
 	}
 
@@ -216,92 +147,42 @@ public class ZaimTest {
 	 * @throws IOException
 	 * @throws JsonFormatException
 	 * @author vvakame
+	 * @throws IllegalAccessException 
 	 */
 	@Test
-	@Ignore("this test create actual data...")
-	public void money_income() throws IOException, JsonFormatException {
+	public void money_income() throws IOException, JsonFormatException, IllegalAccessException {
 		Zaim zaim = getZaimInstance();
 
-		final long moneyId;
+		final MoneyInfo money;
 		{
-			final Holder<MoneyPostInsertResponse> holder = new Holder<MoneyPostInsertResponse>();
-			@SuppressWarnings("deprecation")
-			MoneyIncomeInsertArgument argument = new MoneyIncomeInsertArgument(11, 999, date);
-			zaim.money().income().insert(argument)
-				.execute(new ZaimListener<MoneyPostInsertResponse>() {
-
-					@Override
-					public void onSuccess(MoneyPostInsertResponse success) {
-						assertThat(success.getRequested(), not(0L));
-						assertThat(success.getMoney(), notNullValue());
-						assertThat(success.getUser(), notNullValue());
-						holder.ok(success);
-					}
-
-					@Override
-					public void onFailure(ErrorResponse failure) {
-						fail(failure.getMessage());
-					}
-
-					@Override
-					public void onError(Exception e) {
-						throw new RuntimeException(e);
-					}
-				});
-			assertThat(holder.getObject(), notNullValue());
-			moneyId = holder.getObject().getMoney().getId();
+			OtherCategoryItem categoryItem =
+					getCategoryListByMoneyMode(zaim, MoneyMode.Income).get(0);
+			MoneyIncomeInsertArgument argument =
+					new MoneyIncomeInsertArgument(categoryItem, 888, date);
+			ZaimResult<MoneyPostInsertResponse> result =
+					zaim.money().income().insert(argument).execute();
+			assertThat(result.isSuccess(), is(true));
+			assertThat(result.getValue().getRequested(), not(0L));
+			assertThat(result.getValue().getMoney(), notNullValue());
+			assertThat(result.getValue().getUser(), notNullValue());
+			money = result.getValue().getMoney();
 		}
 		{ // update
-			final Holder<MoneyModifiedResponse> holder = new Holder<MoneyModifiedResponse>();
-			@SuppressWarnings("deprecation")
-			MoneyUpdateArgument argument = new MoneyUpdateArgument(moneyId, 333, date);
-			zaim.money().income().update(argument)
-				.execute(new ZaimListener<MoneyModifiedResponse>() {
-
-					@Override
-					public void onSuccess(MoneyModifiedResponse success) {
-						assertThat(success.getRequested(), not(0L));
-						assertThat(success.getMoney(), notNullValue());
-						assertThat(success.getUser(), notNullValue());
-						holder.ok(success);
-					}
-
-					@Override
-					public void onFailure(ErrorResponse failure) {
-						fail(failure.getMessage());
-					}
-
-					@Override
-					public void onError(Exception e) {
-						throw new RuntimeException(e);
-					}
-				});
-			assertThat(holder.getObject(), notNullValue());
+			MoneyUpdateArgument argument = new MoneyUpdateArgument(money, 333, date);
+			ZaimResult<MoneyModifiedResponse> result =
+					zaim.money().income().update(argument).execute();
+			assertThat(result.isSuccess(), is(true));
+			assertThat(result.getValue().getRequested(), not(0L));
+			assertThat(result.getValue().getMoney(), notNullValue());
+			assertThat(result.getValue().getUser(), notNullValue());
 		}
 		{ // delete
-			final Holder<MoneyModifiedResponse> holder = new Holder<MoneyModifiedResponse>();
-			zaim.money().income().delete(moneyId)
-				.execute(new ZaimListener<MoneyModifiedResponse>() {
-
-					@Override
-					public void onSuccess(MoneyModifiedResponse success) {
-						assertThat(success.getRequested(), not(0L));
-						assertThat(success.getMoney(), notNullValue());
-						assertThat(success.getUser(), notNullValue());
-						holder.ok(success);
-					}
-
-					@Override
-					public void onFailure(ErrorResponse failure) {
-						fail(failure.getMessage());
-					}
-
-					@Override
-					public void onError(Exception e) {
-						throw new RuntimeException(e);
-					}
-				});
-			assertThat(holder.getObject(), notNullValue());
+			ZaimResult<MoneyModifiedResponse> result =
+					zaim.money().income().delete(money).execute();
+			assertThat(result.isSuccess(), is(true));
+			assertThat(result.getValue().getRequested(), not(0L));
+			assertThat(result.getValue().getMoney(), notNullValue());
+			assertThat(result.getValue().getUser(), notNullValue());
 		}
 	}
 
@@ -310,91 +191,44 @@ public class ZaimTest {
 	 * @throws IOException
 	 * @throws JsonFormatException
 	 * @author vvakame
+	 * @throws IllegalAccessException 
 	 */
 	@Test
-	@Ignore("this test create actual data...")
-	public void money_transfer() throws IOException, JsonFormatException {
+	public void money_transfer() throws IOException, JsonFormatException, IllegalAccessException {
 		Zaim zaim = getZaimInstance();
 
-		final long moneyId;
+		final MoneyInfo money;
 		{ // insert
-			final Holder<MoneyPostInsertResponse> holder = new Holder<MoneyPostInsertResponse>();
-			MoneyTransferInsertArgument argument = new MoneyTransferInsertArgument(999, date, 1, 2);
-			zaim.money().transfer().insert(argument)
-				.execute(new ZaimListener<MoneyPostInsertResponse>() {
+			List<OtherAccountItem> accountList = getAccountList(zaim);
+			OtherAccountItem from = accountList.get(0);
+			OtherAccountItem to = accountList.get(1);
+			MoneyTransferInsertArgument argument =
+					new MoneyTransferInsertArgument(999, date, from, to);
+			ZaimResult<MoneyPostInsertResponse> result =
+					zaim.money().transfer().insert(argument).execute();
+			assertThat(result.isSuccess(), is(true));
+			assertThat(result.getValue().getRequested(), not(0L));
+			assertThat(result.getValue().getMoney(), notNullValue());
+			assertThat(result.getValue().getUser(), notNullValue());
 
-					@Override
-					public void onSuccess(MoneyPostInsertResponse success) {
-						assertThat(success.getRequested(), not(0L));
-						assertThat(success.getMoney(), notNullValue());
-						assertThat(success.getUser(), notNullValue());
-						holder.ok(success);
-					}
-
-					@Override
-					public void onFailure(ErrorResponse failure) {
-						fail(failure.getMessage());
-					}
-
-					@Override
-					public void onError(Exception e) {
-						throw new RuntimeException(e);
-					}
-				});
-			assertThat(holder.getObject(), notNullValue());
-			moneyId = holder.getObject().getMoney().getId();
+			money = result.getValue().getMoney();
 		}
 		{ // update
-			final Holder<MoneyModifiedResponse> holder = new Holder<MoneyModifiedResponse>();
-			@SuppressWarnings("deprecation")
-			MoneyUpdateArgument argument = new MoneyUpdateArgument(moneyId, 333, date);
-			zaim.money().transfer().update(argument)
-				.execute(new ZaimListener<MoneyModifiedResponse>() {
-
-					@Override
-					public void onSuccess(MoneyModifiedResponse success) {
-						assertThat(success.getRequested(), not(0L));
-						assertThat(success.getMoney(), notNullValue());
-						assertThat(success.getUser(), notNullValue());
-						holder.ok(success);
-					}
-
-					@Override
-					public void onFailure(ErrorResponse failure) {
-						fail(failure.getMessage());
-					}
-
-					@Override
-					public void onError(Exception e) {
-						throw new RuntimeException(e);
-					}
-				});
-			assertThat(holder.getObject(), notNullValue());
+			MoneyUpdateArgument argument = new MoneyUpdateArgument(money, 333, date);
+			ZaimResult<MoneyModifiedResponse> result =
+					zaim.money().transfer().update(argument).execute();
+			assertThat(result.isSuccess(), is(true));
+			assertThat(result.getValue().getRequested(), not(0L));
+			assertThat(result.getValue().getMoney(), notNullValue());
+			assertThat(result.getValue().getUser(), notNullValue());
 		}
 		{ // delete
-			final Holder<MoneyModifiedResponse> holder = new Holder<MoneyModifiedResponse>();
-			zaim.money().transfer().delete(moneyId)
-				.execute(new ZaimListener<MoneyModifiedResponse>() {
-
-					@Override
-					public void onSuccess(MoneyModifiedResponse success) {
-						assertThat(success.getRequested(), not(0L));
-						assertThat(success.getMoney(), notNullValue());
-						assertThat(success.getUser(), notNullValue());
-						holder.ok(success);
-					}
-
-					@Override
-					public void onFailure(ErrorResponse failure) {
-						fail(failure.getMessage());
-					}
-
-					@Override
-					public void onError(Exception e) {
-						throw new RuntimeException(e);
-					}
-				});
-			assertThat(holder.getObject(), notNullValue());
+			ZaimResult<MoneyModifiedResponse> result =
+					zaim.money().transfer().delete(money).execute();
+			assertThat(result.isSuccess(), is(true));
+			assertThat(result.getValue().getRequested(), not(0L));
+			assertThat(result.getValue().getMoney(), notNullValue());
+			assertThat(result.getValue().getUser(), notNullValue());
 		}
 	}
 
@@ -403,32 +237,18 @@ public class ZaimTest {
 	 * @throws IOException
 	 * @throws JsonFormatException
 	 * @author vvakame
+	 * @throws IllegalAccessException 
 	 */
 	@Test
-	public void category_list() throws IOException, JsonFormatException {
+	public void category_list() throws IOException, JsonFormatException, IllegalAccessException {
 		Zaim zaim = getZaimInstance();
 
-		final Holder<CategoryListResponse> holder = new Holder<CategoryListResponse>();
-		zaim.category().list().execute(new ZaimListener<CategoryListResponse>() {
-
-			@Override
-			public void onSuccess(CategoryListResponse success) {
-				assertThat(success.getRequested(), not(0L));
-				assertThat(success.getCategories().size(), not(0));
-				holder.ok(success);
-			}
-
-			@Override
-			public void onFailure(ErrorResponse failure) {
-				fail(failure.getMessage());
-			}
-
-			@Override
-			public void onError(Exception e) {
-				throw new RuntimeException(e);
-			}
-		});
-		assertThat(holder.getObject(), notNullValue());
+		ZaimResult<CategoryListResponse> result = zaim.category().list().execute();
+		assertThat(result.isSuccess(), is(true));
+		assertThat(result.getValue().getRequested(), not(0L));
+		if (result.getValue().getCategories() != null) {
+			assertThat(result.getValue().getCategories().size(), not(0));
+		}
 	}
 
 	/**
@@ -436,32 +256,16 @@ public class ZaimTest {
 	 * @throws IOException
 	 * @throws JsonFormatException
 	 * @author vvakame
+	 * @throws IllegalAccessException 
 	 */
 	@Test
-	public void genre_list() throws IOException, JsonFormatException {
+	public void genre_list() throws IOException, JsonFormatException, IllegalAccessException {
 		Zaim zaim = getZaimInstance();
 
-		final Holder<GenreListResponse> holder = new Holder<GenreListResponse>();
-		zaim.genre().list().execute(new ZaimListener<GenreListResponse>() {
-
-			@Override
-			public void onSuccess(GenreListResponse success) {
-				assertThat(success.getRequested(), not(0L));
-				assertThat(success.getGenres().size(), not(0));
-				holder.ok(success);
-			}
-
-			@Override
-			public void onFailure(ErrorResponse failure) {
-				fail(failure.getMessage());
-			}
-
-			@Override
-			public void onError(Exception e) {
-				throw new RuntimeException(e);
-			}
-		});
-		assertThat(holder.getObject(), notNullValue());
+		ZaimResult<GenreListResponse> result = zaim.genre().list().execute();
+		assertThat(result.isSuccess(), is(true));
+		assertThat(result.getValue().getRequested(), not(0L));
+		assertThat(result.getValue().getGenres().size(), not(0));
 	}
 
 	/**
@@ -469,32 +273,16 @@ public class ZaimTest {
 	 * @throws IOException
 	 * @throws JsonFormatException
 	 * @author vvakame
+	 * @throws IllegalAccessException 
 	 */
 	@Test
-	public void account_list() throws IOException, JsonFormatException {
+	public void account_list() throws IOException, JsonFormatException, IllegalAccessException {
 		Zaim zaim = getZaimInstance();
 
-		final Holder<AccountListResponse> holder = new Holder<AccountListResponse>();
-		zaim.account().list().execute(new ZaimListener<AccountListResponse>() {
-
-			@Override
-			public void onSuccess(AccountListResponse success) {
-				assertThat(success.getRequested(), not(0L));
-				assertThat(success.getAccounts().size(), not(0));
-				holder.ok(success);
-			}
-
-			@Override
-			public void onFailure(ErrorResponse failure) {
-				fail(failure.getMessage());
-			}
-
-			@Override
-			public void onError(Exception e) {
-				throw new RuntimeException(e);
-			}
-		});
-		assertThat(holder.getObject(), notNullValue());
+		ZaimResult<AccountListResponse> result = zaim.account().list().execute();
+		assertThat(result.isSuccess(), is(true));
+		assertThat(result.getValue().getRequested(), not(0L));
+		assertThat(result.getValue().getAccounts().size(), not(0));
 	}
 
 	/**
@@ -502,32 +290,17 @@ public class ZaimTest {
 	 * @throws IOException
 	 * @throws JsonFormatException
 	 * @author vvakame
+	 * @throws IllegalAccessException 
 	 */
 	@Test
-	public void other_account_list() throws IOException, JsonFormatException {
+	public void other_account_list() throws IOException, JsonFormatException,
+			IllegalAccessException {
 		Zaim zaim = getZaimInstance();
 
-		final Holder<OtherAccountListResponse> holder = new Holder<OtherAccountListResponse>();
-		zaim.other().account().list().execute(new ZaimListener<OtherAccountListResponse>() {
-
-			@Override
-			public void onSuccess(OtherAccountListResponse success) {
-				assertThat(success.getRequested(), not(0L));
-				assertThat(success.getAccounts().size(), not(0));
-				holder.ok(success);
-			}
-
-			@Override
-			public void onFailure(ErrorResponse failure) {
-				fail(failure.getMessage());
-			}
-
-			@Override
-			public void onError(Exception e) {
-				throw new RuntimeException(e);
-			}
-		});
-		assertThat(holder.getObject(), notNullValue());
+		ZaimResult<OtherAccountListResponse> result = zaim.other().account().list().execute();
+		assertThat(result.isSuccess(), is(true));
+		assertThat(result.getValue().getRequested(), not(0L));
+		assertThat(result.getValue().getAccounts().size(), not(0));
 	}
 
 	/**
@@ -535,32 +308,17 @@ public class ZaimTest {
 	 * @throws IOException
 	 * @throws JsonFormatException
 	 * @author vvakame
+	 * @throws IllegalAccessException 
 	 */
 	@Test
-	public void other_category_list() throws IOException, JsonFormatException {
+	public void other_category_list() throws IOException, JsonFormatException,
+			IllegalAccessException {
 		Zaim zaim = getZaimInstance();
 
-		final Holder<OtherCategoryListResponse> holder = new Holder<OtherCategoryListResponse>();
-		zaim.other().category().list().execute(new ZaimListener<OtherCategoryListResponse>() {
-
-			@Override
-			public void onSuccess(OtherCategoryListResponse success) {
-				assertThat(success.getRequested(), not(0L));
-				assertThat(success.getCategories().size(), not(0));
-				holder.ok(success);
-			}
-
-			@Override
-			public void onFailure(ErrorResponse failure) {
-				fail(failure.getMessage());
-			}
-
-			@Override
-			public void onError(Exception e) {
-				throw new RuntimeException(e);
-			}
-		});
-		assertThat(holder.getObject(), notNullValue());
+		ZaimResult<OtherCategoryListResponse> result = zaim.other().category().list().execute();
+		assertThat(result.isSuccess(), is(true));
+		assertThat(result.getValue().getRequested(), not(0L));
+		assertThat(result.getValue().getCategories().size(), not(0));
 	}
 
 	/**
@@ -568,32 +326,16 @@ public class ZaimTest {
 	 * @throws IOException
 	 * @throws JsonFormatException
 	 * @author vvakame
+	 * @throws IllegalAccessException 
 	 */
 	@Test
-	public void other_genre_list() throws IOException, JsonFormatException {
+	public void other_genre_list() throws IOException, JsonFormatException, IllegalAccessException {
 		Zaim zaim = getZaimInstance();
 
-		final Holder<OtherGenreListResponse> holder = new Holder<OtherGenreListResponse>();
-		zaim.other().genre().list().execute(new ZaimListener<OtherGenreListResponse>() {
-
-			@Override
-			public void onSuccess(OtherGenreListResponse success) {
-				assertThat(success.getRequested(), not(0L));
-				assertThat(success.getGenres().size(), not(0));
-				holder.ok(success);
-			}
-
-			@Override
-			public void onFailure(ErrorResponse failure) {
-				fail(failure.getMessage());
-			}
-
-			@Override
-			public void onError(Exception e) {
-				throw new RuntimeException(e);
-			}
-		});
-		assertThat(holder.getObject(), notNullValue());
+		ZaimResult<OtherGenreListResponse> result = zaim.other().genre().list().execute();
+		assertThat(result.isSuccess(), is(true));
+		assertThat(result.getValue().getRequested(), not(0L));
+		assertThat(result.getValue().getGenres().size(), not(0));
 	}
 
 	/**
@@ -601,32 +343,17 @@ public class ZaimTest {
 	 * @throws IOException
 	 * @throws JsonFormatException
 	 * @author vvakame
+	 * @throws IllegalAccessException 
 	 */
 	@Test
-	public void other_currency_list() throws IOException, JsonFormatException {
+	public void other_currency_list() throws IOException, JsonFormatException,
+			IllegalAccessException {
 		Zaim zaim = getZaimInstance();
 
-		final Holder<OtherCurrencyListResponse> holder = new Holder<OtherCurrencyListResponse>();
-		zaim.other().currency().list().execute(new ZaimListener<OtherCurrencyListResponse>() {
-
-			@Override
-			public void onSuccess(OtherCurrencyListResponse success) {
-				assertThat(success.getRequested(), not(0L));
-				assertThat(success.getCurrencies().size(), not(0));
-				holder.ok(success);
-			}
-
-			@Override
-			public void onFailure(ErrorResponse failure) {
-				fail(failure.getMessage());
-			}
-
-			@Override
-			public void onError(Exception e) {
-				throw new RuntimeException(e);
-			}
-		});
-		assertThat(holder.getObject(), notNullValue());
+		ZaimResult<OtherCurrencyListResponse> result = zaim.other().currency().list().execute();
+		assertThat(result.isSuccess(), is(true));
+		assertThat(result.getValue().getRequested(), not(0L));
+		assertThat(result.getValue().getCurrencies().size(), not(0));
 	}
 
 	Zaim getZaimInstance() throws IOException, JsonFormatException {
@@ -637,6 +364,53 @@ public class ZaimTest {
 		String json = streamToString(is);
 		OAuthCredential credential = OAuthCredential.Builder.newBuild(configuration, json).build();
 		return Zaim.newInstance(credential);
+	}
+
+	static void createMoneyPayment(Zaim zaim, int amount) {
+		zaim.money().payment().insert(new MoneyPaymentInsertArgument(null, amount, "2014-07-07"));
+	}
+
+	static List<OtherCategoryItem> getCategoryListByMoneyMode(Zaim zaim, MoneyMode mode)
+			throws IllegalAccessException, IOException, JsonFormatException {
+		ZaimResult<OtherCategoryListResponse> result = zaim.other().category().list().execute();
+		if (!result.isSuccess()) {
+			throw new RuntimeException();
+		}
+		List<OtherCategoryItem> resultList = new ArrayList<OtherCategoryItem>();
+		for (OtherCategoryItem item : result.getValue().getCategories()) {
+			if (item.getMode() == mode) {
+				resultList.add(item);
+			}
+		}
+		return resultList;
+	}
+
+	static List<OtherGenreItem> getGenreListByMoneyMode(Zaim zaim, MoneyMode mode)
+			throws IllegalAccessException, IOException, JsonFormatException {
+		ZaimResult<OtherGenreListResponse> result = zaim.other().genre().list().execute();
+		if (!result.isSuccess()) {
+			throw new RuntimeException();
+		}
+		List<OtherGenreItem> resultList = new ArrayList<OtherGenreItem>();
+		List<OtherCategoryItem> categoryList = getCategoryListByMoneyMode(zaim, mode);
+		for (OtherGenreItem genreItem : result.getValue().getGenres()) {
+			for (OtherCategoryItem categoryItem : categoryList) {
+				if (genreItem.getCategoryId() == categoryItem.getId()) {
+					resultList.add(genreItem);
+					break;
+				}
+			}
+		}
+		return resultList;
+	}
+
+	static List<OtherAccountItem> getAccountList(Zaim zaim) throws IllegalAccessException,
+			IOException, JsonFormatException {
+		ZaimResult<OtherAccountListResponse> result = zaim.other().account().list().execute();
+		if (!result.isSuccess()) {
+			throw new RuntimeException();
+		}
+		return result.getValue().getAccounts();
 	}
 
 

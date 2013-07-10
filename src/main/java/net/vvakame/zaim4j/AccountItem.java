@@ -5,25 +5,14 @@ import java.io.StringWriter;
 
 import net.vvakame.util.jsonpullparser.annotation.JsonKey;
 import net.vvakame.util.jsonpullparser.annotation.JsonModel;
+import net.vvakame.zaim4j.Active.ActiveConverter;
 
 /**
  * Account item.
  * @author vvakame
  */
 @JsonModel(decamelize = true, genToPackagePrivate = true, treatUnknownKeyAsError = true)
-public class AccountItem {
-
-	@JsonKey
-	long id;
-
-	@JsonKey
-	String name;
-
-	@JsonKey
-	String color;
-
-	@JsonKey
-	String iconUrl;
+public class AccountItem extends OtherAccountItem {
 
 	@JsonKey
 	String description;
@@ -37,8 +26,8 @@ public class AccountItem {
 	@JsonKey
 	String modified;
 
-	@JsonKey
-	long active;
+	@JsonKey(converter = ActiveConverter.class)
+	Active active;
 
 
 	@Override
@@ -50,70 +39,6 @@ public class AccountItem {
 			throw new RuntimeException(e);
 		}
 		return writer.toString();
-	}
-
-	/**
-	 * @return the id
-	 * @category accessor
-	 */
-	public long getId() {
-		return id;
-	}
-
-	/**
-	 * @param id the id to set
-	 * @category accessor
-	 */
-	public void setId(long id) {
-		this.id = id;
-	}
-
-	/**
-	 * @return the name
-	 * @category accessor
-	 */
-	public String getName() {
-		return name;
-	}
-
-	/**
-	 * @param name the name to set
-	 * @category accessor
-	 */
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	/**
-	 * @return the color
-	 * @category accessor
-	 */
-	public String getColor() {
-		return color;
-	}
-
-	/**
-	 * @param color the color to set
-	 * @category accessor
-	 */
-	public void setColor(String color) {
-		this.color = color;
-	}
-
-	/**
-	 * @return the iconUrl
-	 * @category accessor
-	 */
-	public String getIconUrl() {
-		return iconUrl;
-	}
-
-	/**
-	 * @param iconUrl the iconUrl to set
-	 * @category accessor
-	 */
-	public void setIconUrl(String iconUrl) {
-		this.iconUrl = iconUrl;
 	}
 
 	/**
@@ -184,7 +109,7 @@ public class AccountItem {
 	 * @return the active
 	 * @category accessor
 	 */
-	public long getActive() {
+	public Active getActive() {
 		return active;
 	}
 
@@ -192,7 +117,7 @@ public class AccountItem {
 	 * @param active the active to set
 	 * @category accessor
 	 */
-	public void setActive(long active) {
+	public void setActive(Active active) {
 		this.active = active;
 	}
 }

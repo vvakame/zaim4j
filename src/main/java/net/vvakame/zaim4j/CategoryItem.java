@@ -5,6 +5,7 @@ import java.io.StringWriter;
 
 import net.vvakame.util.jsonpullparser.annotation.JsonKey;
 import net.vvakame.util.jsonpullparser.annotation.JsonModel;
+import net.vvakame.zaim4j.Active.ActiveConverter;
 
 /**
  * Category item.
@@ -25,8 +26,8 @@ public class CategoryItem extends OtherCategoryItem {
 	@JsonKey
 	long sort;
 
-	@JsonKey
-	long active;
+	@JsonKey(converter = ActiveConverter.class)
+	Active active;
 
 	@JsonKey
 	long parentCategoryId;
@@ -117,7 +118,7 @@ public class CategoryItem extends OtherCategoryItem {
 	 * @return the active
 	 * @category accessor
 	 */
-	public long getActive() {
+	public Active getActive() {
 		return active;
 	}
 
@@ -125,7 +126,7 @@ public class CategoryItem extends OtherCategoryItem {
 	 * @param active the active to set
 	 * @category accessor
 	 */
-	public void setActive(long active) {
+	public void setActive(Active active) {
 		this.active = active;
 	}
 

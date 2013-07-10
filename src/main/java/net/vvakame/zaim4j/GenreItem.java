@@ -5,6 +5,7 @@ import java.io.StringWriter;
 
 import net.vvakame.util.jsonpullparser.annotation.JsonKey;
 import net.vvakame.util.jsonpullparser.annotation.JsonModel;
+import net.vvakame.zaim4j.Active.ActiveConverter;
 
 /**
  * Genre item.
@@ -19,8 +20,8 @@ public class GenreItem extends OtherGenreItem {
 	@JsonKey
 	long parentGenreId;
 
-	@JsonKey
-	long active;
+	@JsonKey(converter = ActiveConverter.class)
+	Active active;
 
 	@JsonKey
 	String modified;
@@ -73,7 +74,7 @@ public class GenreItem extends OtherGenreItem {
 	 * @return the active
 	 * @category accessor
 	 */
-	public long getActive() {
+	public Active getActive() {
 		return active;
 	}
 
@@ -81,7 +82,7 @@ public class GenreItem extends OtherGenreItem {
 	 * @param active the active to set
 	 * @category accessor
 	 */
-	public void setActive(long active) {
+	public void setActive(Active active) {
 		this.active = active;
 	}
 
