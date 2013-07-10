@@ -673,6 +673,16 @@ public class Zaim {
 			public Delete delete(long id) {
 				return new Delete(id);
 			}
+
+			/**
+			 * Money payment delete api.
+			 * @param moneyItem 
+			 * @return insert api
+			 * @author vvakame
+			 */
+			public Delete delete(MoneyItem moneyItem) {
+				return new Delete(moneyItem.getId());
+			}
 		}
 
 
@@ -944,13 +954,23 @@ public class Zaim {
 
 
 			/**
-			* Money payment delete api.
-			* @param id 
-			* @return insert api
-			* @author vvakame
-			*/
+			 * Money payment delete api.
+			 * @param id 
+			 * @return insert api
+			 * @author vvakame
+			 */
 			public Delete delete(long id) {
 				return new Delete(id);
+			}
+
+			/**
+			 * Money payment delete api.
+			 * @param moneyItem 
+			 * @return insert api
+			 * @author vvakame
+			 */
+			public Delete delete(MoneyItem moneyItem) {
+				return new Delete(moneyItem.getId());
 			}
 		}
 
@@ -1221,13 +1241,23 @@ public class Zaim {
 
 
 			/**
-			* Money transfer delete api.
-			* @param id 
-			* @return transfer api
-			* @author vvakame
-			*/
+			 * Money transfer delete api.
+			 * @param id 
+			 * @return transfer api
+			 * @author vvakame
+			 */
 			public Delete delete(long id) {
 				return new Delete(id);
+			}
+
+			/**
+			 * Money transfer delete api.
+			 * @param moneyItem 
+			 * @return transfer api
+			 * @author vvakame
+			 */
+			public Delete delete(MoneyItem moneyItem) {
+				return new Delete(moneyItem.getId());
 			}
 		}
 

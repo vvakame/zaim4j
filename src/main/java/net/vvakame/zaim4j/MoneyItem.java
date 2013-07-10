@@ -1,5 +1,8 @@
 package net.vvakame.zaim4j;
 
+import java.io.IOException;
+import java.io.StringWriter;
+
 import net.vvakame.util.jsonpullparser.annotation.JsonKey;
 import net.vvakame.util.jsonpullparser.annotation.JsonModel;
 import net.vvakame.zaim4j.MoneyMode.MoneyModeConverter;
@@ -11,7 +14,7 @@ import net.vvakame.zaim4j.MoneyMode.MoneyModeConverter;
 @JsonModel(decamelize = true, genToPackagePrivate = true, treatUnknownKeyAsError = true)
 public class MoneyItem {
 
-	@JsonKey
+	@JsonKey(sortOrder = 0)
 	long id;
 
 	@JsonKey
@@ -59,6 +62,17 @@ public class MoneyItem {
 	@JsonKey
 	long receiptId;
 
+
+	@Override
+	public String toString() {
+		StringWriter writer = new StringWriter();
+		try {
+			MoneyItemGen.encode(writer, this);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		return writer.toString();
+	}
 
 	/**
 	 * @return the id

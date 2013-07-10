@@ -159,6 +159,7 @@ public class ZaimTest {
 		}
 		{ // update
 			final Holder<MoneyModifiedResponse> holder = new Holder<MoneyModifiedResponse>();
+			@SuppressWarnings("deprecation")
 			MoneyUpdateArgument argument = new MoneyUpdateArgument(moneyId, 333, date);
 			zaim.money().payment().update(argument)
 				.execute(new ZaimListener<MoneyModifiedResponse>() {
@@ -252,6 +253,7 @@ public class ZaimTest {
 		}
 		{ // update
 			final Holder<MoneyModifiedResponse> holder = new Holder<MoneyModifiedResponse>();
+			@SuppressWarnings("deprecation")
 			MoneyUpdateArgument argument = new MoneyUpdateArgument(moneyId, 333, date);
 			zaim.money().income().update(argument)
 				.execute(new ZaimListener<MoneyModifiedResponse>() {
@@ -344,6 +346,7 @@ public class ZaimTest {
 		}
 		{ // update
 			final Holder<MoneyModifiedResponse> holder = new Holder<MoneyModifiedResponse>();
+			@SuppressWarnings("deprecation")
 			MoneyUpdateArgument argument = new MoneyUpdateArgument(moneyId, 333, date);
 			zaim.money().transfer().update(argument)
 				.execute(new ZaimListener<MoneyModifiedResponse>() {
