@@ -20,9 +20,6 @@ public class GenreItem extends OtherGenreItem {
 	long parentGenreId;
 
 	@JsonKey
-	long editFlag;
-
-	@JsonKey
 	long active;
 
 	@JsonKey
@@ -70,22 +67,6 @@ public class GenreItem extends OtherGenreItem {
 	 */
 	public void setParentGenreId(long parentGenreId) {
 		this.parentGenreId = parentGenreId;
-	}
-
-	/**
-	 * @return the editFlag
-	 * @category accessor
-	 */
-	public long getEditFlag() {
-		return editFlag;
-	}
-
-	/**
-	 * @param editFlag the editFlag to set
-	 * @category accessor
-	 */
-	public void setEditFlag(long editFlag) {
-		this.editFlag = editFlag;
 	}
 
 	/**

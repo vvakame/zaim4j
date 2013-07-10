@@ -23,9 +23,6 @@ public class CategoryItem extends OtherCategoryItem {
 	long budget;
 
 	@JsonKey
-	long editFlag;
-
-	@JsonKey
 	long sort;
 
 	@JsonKey
@@ -98,22 +95,6 @@ public class CategoryItem extends OtherCategoryItem {
 	 */
 	public void setBudget(long budget) {
 		this.budget = budget;
-	}
-
-	/**
-	 * @return the editFlag
-	 * @category accessor
-	 */
-	public long getEditFlag() {
-		return editFlag;
-	}
-
-	/**
-	 * @param editFlag the editFlag to set
-	 * @category accessor
-	 */
-	public void setEditFlag(long editFlag) {
-		this.editFlag = editFlag;
 	}
 
 	/**
