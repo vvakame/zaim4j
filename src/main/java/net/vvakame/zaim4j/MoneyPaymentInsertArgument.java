@@ -35,7 +35,7 @@ public class MoneyPaymentInsertArgument {
 	 * @param amount
 	 * @param date
 	 * @category constructor
-	 * @deprecated replaced to {@link #MoneyPaymentInsertArgument(OtherGenreItem, double, String)}
+	 * @deprecated replaced to {@link #MoneyPaymentInsertArgument(GenreItem, double, String)}
 	 */
 	@Deprecated
 	public MoneyPaymentInsertArgument(long categoryId, long genreId, double amount, String date) {
@@ -52,7 +52,7 @@ public class MoneyPaymentInsertArgument {
 	 * @param date
 	 * @category constructor
 	 */
-	public MoneyPaymentInsertArgument(OtherGenreItem genre, double amount, String date) {
+	public MoneyPaymentInsertArgument(GenreItem genre, double amount, String date) {
 		this(genre.getCategoryId(), genre.getId(), amount, date);
 	}
 
@@ -65,11 +65,11 @@ public class MoneyPaymentInsertArgument {
 
 	/**
 	 * set genreId.<br>
-	 * categoryId = {@link OtherGenreItem#getCategoryId()}, genreId = {@link OtherGenreItem#getId()}.
+	 * categoryId = {@link GenreItem#getCategoryId()}, genreId = {@link GenreItem#getId()}.
 	 * @param genre
 	 * @author vvakame
 	 */
-	public void setGenre(OtherGenreItem genre) {
+	public void setGenre(GenreItem genre) {
 		if (genre == null) {
 			throw new NullPointerException("genre is required.");
 		}
@@ -80,7 +80,7 @@ public class MoneyPaymentInsertArgument {
 	/**
 	 * @param categoryId the categoryId to set
 	 * @category accessor
-	 * @deprecated replace to {@link #setGenre(OtherGenreItem)}.
+	 * @deprecated replace to {@link #setGenre(GenreItem)}.
 	 */
 	@Deprecated
 	public void setCategoryId(long categoryId) {
@@ -90,7 +90,7 @@ public class MoneyPaymentInsertArgument {
 	/**
 	 * @param genreId the genreId to set
 	 * @category accessor
-	 * @deprecated replace to {@link #setGenre(OtherGenreItem)}.
+	 * @deprecated replace to {@link #setGenre(GenreItem)}.
 	 */
 	@Deprecated
 	public void setGenreId(long genreId) {

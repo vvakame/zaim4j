@@ -92,11 +92,11 @@ public class MoneyUpdateArgument {
 
 	/**
 	 * set categoryId and genreId.<br>
-	 * categoryId = {@link OtherCategoryItem#getId()}, genreId = null.
+	 * categoryId = {@link CategoryItem#getId()}, genreId = null.
 	 * @param category
 	 * @author vvakame
 	 */
-	public void setCategory(OtherCategoryItem category) {
+	public void setCategory(CategoryItem category) {
 		if (category != null) {
 			setCategoryId(category.getId());
 			setGenreId(null);
@@ -108,11 +108,11 @@ public class MoneyUpdateArgument {
 
 	/**
 	 * set genreId.<br>
-	 * categoryId = {@link OtherGenreItem#getCategoryId()}, genreId = {@link OtherGenreItem#getId()}.
+	 * categoryId = {@link GenreItem#getCategoryId()}, genreId = {@link GenreItem#getId()}.
 	 * @param genre
 	 * @author vvakame
 	 */
-	public void setGenre(OtherGenreItem genre) {
+	public void setGenre(GenreItem genre) {
 		if (genre != null) {
 			setCategoryId(genre.getCategoryId());
 			setGenreId(genre.getId());
@@ -124,7 +124,7 @@ public class MoneyUpdateArgument {
 	/**
 	 * @param categoryId the categoryId to set
 	 * @category accessor
-	 * @deprecated replace to {@link #setCategory(OtherCategoryItem)}.
+	 * @deprecated replace to {@link #setCategory(CategoryItem)}.
 	 */
 	@Deprecated
 	public void setCategoryId(Long categoryId) {
@@ -134,7 +134,7 @@ public class MoneyUpdateArgument {
 	/**
 	 * @param genreId the genreId to set
 	 * @category accessor
-	 * @deprecated replace to {@link #setGenre(OtherGenreItem)}.
+	 * @deprecated replace to {@link #setGenre(GenreItem)}.
 	 */
 	@Deprecated
 	public void setGenreId(Long genreId) {

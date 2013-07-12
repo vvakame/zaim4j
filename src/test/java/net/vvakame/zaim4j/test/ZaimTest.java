@@ -10,8 +10,11 @@ import java.util.Date;
 import java.util.List;
 
 import net.vvakame.util.jsonpullparser.JsonFormatException;
+import net.vvakame.zaim4j.AccountItem;
 import net.vvakame.zaim4j.AccountListResponse;
+import net.vvakame.zaim4j.CategoryItem;
 import net.vvakame.zaim4j.CategoryListResponse;
+import net.vvakame.zaim4j.GenreItem;
 import net.vvakame.zaim4j.GenreListResponse;
 import net.vvakame.zaim4j.MoneyIncomeInsertArgument;
 import net.vvakame.zaim4j.MoneyInfo;
@@ -24,12 +27,9 @@ import net.vvakame.zaim4j.MoneyTransferInsertArgument;
 import net.vvakame.zaim4j.MoneyUpdateArgument;
 import net.vvakame.zaim4j.OAuthConfiguration;
 import net.vvakame.zaim4j.OAuthCredential;
-import net.vvakame.zaim4j.OtherAccountItem;
 import net.vvakame.zaim4j.OtherAccountListResponse;
-import net.vvakame.zaim4j.OtherCategoryItem;
 import net.vvakame.zaim4j.OtherCategoryListResponse;
 import net.vvakame.zaim4j.OtherCurrencyListResponse;
-import net.vvakame.zaim4j.OtherGenreItem;
 import net.vvakame.zaim4j.OtherGenreListResponse;
 import net.vvakame.zaim4j.UserVerifyResponse;
 import net.vvakame.zaim4j.Zaim;
@@ -84,7 +84,7 @@ public class ZaimTest {
 		Zaim zaim = getZaimInstance();
 
 		{
-			OtherGenreItem genreItem = getGenreListByMoneyMode(zaim, MoneyMode.Payment).get(0);
+			GenreItem genreItem = getGenreListByMoneyMode(zaim, MoneyMode.Payment).get(0);
 			MoneyPaymentInsertArgument argument =
 					new MoneyPaymentInsertArgument(genreItem, 888, date);
 			ZaimResult<MoneyPostInsertResponse> result =
@@ -111,7 +111,7 @@ public class ZaimTest {
 
 		final MoneyInfo money;
 		{ // insert
-			OtherGenreItem genreItem = getGenreListByMoneyMode(zaim, MoneyMode.Payment).get(0);
+			GenreItem genreItem = getGenreListByMoneyMode(zaim, MoneyMode.Payment).get(0);
 			MoneyPaymentInsertArgument argument =
 					new MoneyPaymentInsertArgument(genreItem, 888, date);
 			ZaimResult<MoneyPostInsertResponse> result =
@@ -155,8 +155,7 @@ public class ZaimTest {
 
 		final MoneyInfo money;
 		{
-			OtherCategoryItem categoryItem =
-					getCategoryListByMoneyMode(zaim, MoneyMode.Income).get(0);
+			CategoryItem categoryItem = getCategoryListByMoneyMode(zaim, MoneyMode.Income).get(0);
 			MoneyIncomeInsertArgument argument =
 					new MoneyIncomeInsertArgument(categoryItem, 888, date);
 			ZaimResult<MoneyPostInsertResponse> result =
@@ -199,9 +198,9 @@ public class ZaimTest {
 
 		final MoneyInfo money;
 		{ // insert
-			List<OtherAccountItem> accountList = getAccountList(zaim);
-			OtherAccountItem from = accountList.get(0);
-			OtherAccountItem to = accountList.get(1);
+			List<AccountItem> accountList = getAccountList(zaim);
+			AccountItem from = accountList.get(0);
+			AccountItem to = accountList.get(1);
 			MoneyTransferInsertArgument argument =
 					new MoneyTransferInsertArgument(999, date, from, to);
 			ZaimResult<MoneyPostInsertResponse> result =
@@ -368,14 +367,14 @@ public class ZaimTest {
 		zaim.money().payment().insert(new MoneyPaymentInsertArgument(null, amount, "2014-07-07"));
 	}
 
-	static List<OtherCategoryItem> getCategoryListByMoneyMode(Zaim zaim, MoneyMode mode)
+	static List<CategoryItem> getCategoryListByMoneyMode(Zaim zaim, MoneyMode mode)
 			throws IllegalAccessException, IOException, JsonFormatException {
-		ZaimResult<OtherCategoryListResponse> result = zaim.other().category().list().execute();
+		ZaimResult<CategoryListResponse> result = zaim.category().list().execute();
 		if (!result.isSuccess()) {
 			throw new RuntimeException();
 		}
-		List<OtherCategoryItem> resultList = new ArrayList<OtherCategoryItem>();
-		for (OtherCategoryItem item : result.getValue().getCategories()) {
+		List<CategoryItem> resultList = new ArrayList<CategoryItem>();
+		for (CategoryItem item : result.getValue().getCategories()) {
 			if (item.getMode() == mode) {
 				resultList.add(item);
 			}
@@ -383,16 +382,16 @@ public class ZaimTest {
 		return resultList;
 	}
 
-	static List<OtherGenreItem> getGenreListByMoneyMode(Zaim zaim, MoneyMode mode)
+	static List<GenreItem> getGenreListByMoneyMode(Zaim zaim, MoneyMode mode)
 			throws IllegalAccessException, IOException, JsonFormatException {
-		ZaimResult<OtherGenreListResponse> result = zaim.other().genre().list().execute();
+		ZaimResult<GenreListResponse> result = zaim.genre().list().execute();
 		if (!result.isSuccess()) {
 			throw new RuntimeException();
 		}
-		List<OtherGenreItem> resultList = new ArrayList<OtherGenreItem>();
-		List<OtherCategoryItem> categoryList = getCategoryListByMoneyMode(zaim, mode);
-		for (OtherGenreItem genreItem : result.getValue().getGenres()) {
-			for (OtherCategoryItem categoryItem : categoryList) {
+		List<GenreItem> resultList = new ArrayList<GenreItem>();
+		List<CategoryItem> categoryList = getCategoryListByMoneyMode(zaim, mode);
+		for (GenreItem genreItem : result.getValue().getGenres()) {
+			for (CategoryItem categoryItem : categoryList) {
 				if (genreItem.getCategoryId() == categoryItem.getId()) {
 					resultList.add(genreItem);
 					break;
@@ -402,9 +401,9 @@ public class ZaimTest {
 		return resultList;
 	}
 
-	static List<OtherAccountItem> getAccountList(Zaim zaim) throws IllegalAccessException,
-			IOException, JsonFormatException {
-		ZaimResult<OtherAccountListResponse> result = zaim.other().account().list().execute();
+	static List<AccountItem> getAccountList(Zaim zaim) throws IllegalAccessException, IOException,
+			JsonFormatException {
+		ZaimResult<AccountListResponse> result = zaim.account().list().execute();
 		if (!result.isSuccess()) {
 			throw new RuntimeException();
 		}

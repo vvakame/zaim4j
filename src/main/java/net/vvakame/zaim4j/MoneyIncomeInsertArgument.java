@@ -26,7 +26,7 @@ public class MoneyIncomeInsertArgument {
 	 * @param amount
 	 * @param date
 	 * @category constructor
-	 * @deprecated replaced to {@link #MoneyIncomeInsertArgument(OtherCategoryItem, double, String)}.
+	 * @deprecated replaced to {@link #MoneyIncomeInsertArgument(CategoryItem, double, String)}.
 	 */
 	@Deprecated
 	public MoneyIncomeInsertArgument(long categoryId, double amount, String date) {
@@ -42,7 +42,7 @@ public class MoneyIncomeInsertArgument {
 	 * @param date
 	 * @category constructor
 	 */
-	public MoneyIncomeInsertArgument(OtherCategoryItem category, double amount, String date) {
+	public MoneyIncomeInsertArgument(CategoryItem category, double amount, String date) {
 		this(category.getId(), amount, date);
 	}
 
@@ -54,11 +54,11 @@ public class MoneyIncomeInsertArgument {
 
 	/**
 	 * set categoryId and genreId.<br>
-	 * categoryId = {@link OtherCategoryItem#getId()}, genreId = null.
+	 * categoryId = {@link CategoryItem#getId()}, genreId = null.
 	 * @param category
 	 * @author vvakame
 	 */
-	public void setCategory(OtherCategoryItem category) {
+	public void setCategory(CategoryItem category) {
 		if (category == null) {
 			throw new NullPointerException("category is required");
 		}
@@ -68,7 +68,7 @@ public class MoneyIncomeInsertArgument {
 	/**
 	 * @param categoryId the categoryId to set
 	 * @category accessor
-	 * @deprecated replaced to {@link #setCategory(OtherCategoryItem)}.
+	 * @deprecated replaced to {@link #setCategory(CategoryItem)}.
 	 */
 	@Deprecated
 	public void setCategoryId(long categoryId) {

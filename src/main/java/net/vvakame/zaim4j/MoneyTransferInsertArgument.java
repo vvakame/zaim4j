@@ -28,7 +28,7 @@ public class MoneyTransferInsertArgument {
 	 * @param fromAccountId
 	 * @param toAccountId
 	 * @category constructor
-	 * @deprecated replace to {@link #MoneyTransferInsertArgument(double, String, OtherAccountItem, OtherAccountItem)}.
+	 * @deprecated replace to {@link #MoneyTransferInsertArgument(double, String, AccountItem, AccountItem)}.
 	 */
 	@Deprecated
 	public MoneyTransferInsertArgument(double amount, String date, long fromAccountId,
@@ -48,8 +48,8 @@ public class MoneyTransferInsertArgument {
 	 * @param toAccount
 	 * @category constructor
 	 */
-	public MoneyTransferInsertArgument(double amount, String date, OtherAccountItem fromAccount,
-			OtherAccountItem toAccount) {
+	public MoneyTransferInsertArgument(double amount, String date, AccountItem fromAccount,
+			AccountItem toAccount) {
 		this(amount, date, fromAccount.getId(), toAccount.getId());
 	}
 
@@ -62,18 +62,18 @@ public class MoneyTransferInsertArgument {
 
 	/**
 	 * set fromAccountId.<br>
-	 * fromAccountId = {@link OtherAccountItem#getId()}.
+	 * fromAccountId = {@link AccountItem#getId()}.
 	 * @param fromAccount
 	 * @category accessor
 	 */
-	public void setFromAccount(OtherAccountItem fromAccount) {
+	public void setFromAccount(AccountItem fromAccount) {
 		setFromAccountId(fromAccount.getId());
 	}
 
 	/**
 	 * @param fromAccountId the fromAccountId to set
 	 * @category accessor
-	 * @deprecated replace to {@link #setFromAccount(OtherAccountItem)}.
+	 * @deprecated replace to {@link #setFromAccount(AccountItem)}.
 	 */
 	@Deprecated
 	public void setFromAccountId(long fromAccountId) {
@@ -82,18 +82,18 @@ public class MoneyTransferInsertArgument {
 
 	/**
 	 * set toAccountId.<br>
-	 * toAccountId = {@link OtherAccountItem#getId()}.
+	 * toAccountId = {@link AccountItem#getId()}.
 	 * @param toAccount
 	 * @category accessor
 	 */
-	public void setToAccount(OtherAccountItem toAccount) {
+	public void setToAccount(AccountItem toAccount) {
 		setToAccountId(toAccount.getId());
 	}
 
 	/**
 	 * @param toAccountId the toAccountId to set
 	 * @category accessor
-	 * @deprecated replace to {@link #setToAccount(OtherAccountItem)}.
+	 * @deprecated replace to {@link #setToAccount(AccountItem)}.
 	 */
 	@Deprecated
 	public void setToAccountId(long toAccountId) {
