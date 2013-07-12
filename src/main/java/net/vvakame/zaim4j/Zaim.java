@@ -578,8 +578,8 @@ public class Zaim {
 					if (arg.getToAccountId() != null) {
 						params.put("to_account_id", String.valueOf(arg.getToAccountId()));
 					}
-					if (arg.getGenre() != null) {
-						params.put("genre", String.valueOf(arg.getGenre()));
+					if (arg.getGenreId() != null) {
+						params.put("genre", String.valueOf(arg.getGenreId()));
 					}
 					if (arg.getCategoryId() != null) {
 						params.put("category_id", String.valueOf(arg.getCategoryId()));
@@ -672,6 +672,26 @@ public class Zaim {
 			*/
 			public Delete delete(long id) {
 				return new Delete(id);
+			}
+
+			/**
+			 * Money payment delete api.
+			 * @param moneyItem 
+			 * @return insert api
+			 * @author vvakame
+			 */
+			public Delete delete(MoneyItem moneyItem) {
+				return new Delete(moneyItem.getId());
+			}
+
+			/**
+			 * Money payment delete api.
+			 * @param moneyInfo 
+			 * @return insert api
+			 * @author vvakame
+			 */
+			public Delete delete(MoneyInfo moneyInfo) {
+				return new Delete(moneyInfo.getId());
 			}
 		}
 
@@ -857,8 +877,8 @@ public class Zaim {
 					if (arg.getToAccountId() != null) {
 						params.put("to_account_id", String.valueOf(arg.getToAccountId()));
 					}
-					if (arg.getGenre() != null) {
-						params.put("genre", String.valueOf(arg.getGenre()));
+					if (arg.getGenreId() != null) {
+						params.put("genre", String.valueOf(arg.getGenreId()));
 					}
 					if (arg.getCategoryId() != null) {
 						params.put("category_id", String.valueOf(arg.getCategoryId()));
@@ -944,13 +964,33 @@ public class Zaim {
 
 
 			/**
-			* Money payment delete api.
-			* @param id 
-			* @return insert api
-			* @author vvakame
-			*/
+			 * Money payment delete api.
+			 * @param id 
+			 * @return insert api
+			 * @author vvakame
+			 */
 			public Delete delete(long id) {
 				return new Delete(id);
+			}
+
+			/**
+			 * Money payment delete api.
+			 * @param moneyItem 
+			 * @return insert api
+			 * @author vvakame
+			 */
+			public Delete delete(MoneyItem moneyItem) {
+				return new Delete(moneyItem.getId());
+			}
+
+			/**
+			 * Money payment delete api.
+			 * @param moneyInfo 
+			 * @return insert api
+			 * @author vvakame
+			 */
+			public Delete delete(MoneyInfo moneyInfo) {
+				return new Delete(moneyInfo.getId());
 			}
 		}
 
@@ -1134,8 +1174,8 @@ public class Zaim {
 					if (arg.getToAccountId() != null) {
 						params.put("to_account_id", String.valueOf(arg.getToAccountId()));
 					}
-					if (arg.getGenre() != null) {
-						params.put("genre", String.valueOf(arg.getGenre()));
+					if (arg.getGenreId() != null) {
+						params.put("genre", String.valueOf(arg.getGenreId()));
 					}
 					if (arg.getCategoryId() != null) {
 						params.put("category_id", String.valueOf(arg.getCategoryId()));
@@ -1221,13 +1261,33 @@ public class Zaim {
 
 
 			/**
-			* Money transfer delete api.
-			* @param id 
-			* @return transfer api
-			* @author vvakame
-			*/
+			 * Money transfer delete api.
+			 * @param id 
+			 * @return transfer api
+			 * @author vvakame
+			 */
 			public Delete delete(long id) {
 				return new Delete(id);
+			}
+
+			/**
+			 * Money transfer delete api.
+			 * @param moneyItem 
+			 * @return transfer api
+			 * @author vvakame
+			 */
+			public Delete delete(MoneyItem moneyItem) {
+				return new Delete(moneyItem.getId());
+			}
+
+			/**
+			 * Money transfer delete api.
+			 * @param moneyInfo 
+			 * @return transfer api
+			 * @author vvakame
+			 */
+			public Delete delete(MoneyInfo moneyInfo) {
+				return new Delete(moneyInfo.getId());
 			}
 		}
 

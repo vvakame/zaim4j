@@ -5,6 +5,7 @@ import java.io.StringWriter;
 
 import net.vvakame.util.jsonpullparser.annotation.JsonKey;
 import net.vvakame.util.jsonpullparser.annotation.JsonModel;
+import net.vvakame.zaim4j.Active.ActiveConverter;
 
 /**
  * Account item.
@@ -35,19 +36,10 @@ public class AccountItem {
 	long sort;
 
 	@JsonKey
-	long goal;
-
-	@JsonKey
-	long absFlag;
-
-	@JsonKey
-	long editFlag;
-
-	@JsonKey
 	String modified;
 
-	@JsonKey
-	long active;
+	@JsonKey(converter = ActiveConverter.class)
+	Active active;
 
 
 	@Override
@@ -174,54 +166,6 @@ public class AccountItem {
 	}
 
 	/**
-	 * @return the goal
-	 * @category accessor
-	 */
-	public long getGoal() {
-		return goal;
-	}
-
-	/**
-	 * @param goal the goal to set
-	 * @category accessor
-	 */
-	public void setGoal(long goal) {
-		this.goal = goal;
-	}
-
-	/**
-	 * @return the absFlag
-	 * @category accessor
-	 */
-	public long getAbsFlag() {
-		return absFlag;
-	}
-
-	/**
-	 * @param absFlag the absFlag to set
-	 * @category accessor
-	 */
-	public void setAbsFlag(long absFlag) {
-		this.absFlag = absFlag;
-	}
-
-	/**
-	 * @return the editFlag
-	 * @category accessor
-	 */
-	public long getEditFlag() {
-		return editFlag;
-	}
-
-	/**
-	 * @param editFlag the editFlag to set
-	 * @category accessor
-	 */
-	public void setEditFlag(long editFlag) {
-		this.editFlag = editFlag;
-	}
-
-	/**
 	 * @return the modified
 	 * @category accessor
 	 */
@@ -241,7 +185,7 @@ public class AccountItem {
 	 * @return the active
 	 * @category accessor
 	 */
-	public long getActive() {
+	public Active getActive() {
 		return active;
 	}
 
@@ -249,7 +193,7 @@ public class AccountItem {
 	 * @param active the active to set
 	 * @category accessor
 	 */
-	public void setActive(long active) {
+	public void setActive(Active active) {
 		this.active = active;
 	}
 }

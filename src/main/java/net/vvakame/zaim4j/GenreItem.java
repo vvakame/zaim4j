@@ -5,6 +5,7 @@ import java.io.StringWriter;
 
 import net.vvakame.util.jsonpullparser.annotation.JsonKey;
 import net.vvakame.util.jsonpullparser.annotation.JsonModel;
+import net.vvakame.zaim4j.Active.ActiveConverter;
 
 /**
  * Genre item.
@@ -17,6 +18,9 @@ public class GenreItem {
 	long id;
 
 	@JsonKey
+	long categoryId;
+
+	@JsonKey
 	String name;
 
 	@JsonKey
@@ -25,14 +29,8 @@ public class GenreItem {
 	@JsonKey
 	long parentGenreId;
 
-	@JsonKey
-	long categoryId;
-
-	@JsonKey
-	long editFlag;
-
-	@JsonKey
-	long active;
+	@JsonKey(converter = ActiveConverter.class)
+	Active active;
 
 	@JsonKey
 	String modified;
@@ -63,6 +61,22 @@ public class GenreItem {
 	 */
 	public void setId(long id) {
 		this.id = id;
+	}
+
+	/**
+	 * @return the categoryId
+	 * @category accessor
+	 */
+	public long getCategoryId() {
+		return categoryId;
+	}
+
+	/**
+	 * @param categoryId the categoryId to set
+	 * @category accessor
+	 */
+	public void setCategoryId(long categoryId) {
+		this.categoryId = categoryId;
 	}
 
 	/**
@@ -114,42 +128,10 @@ public class GenreItem {
 	}
 
 	/**
-	 * @return the categoryId
-	 * @category accessor
-	 */
-	public long getCategoryId() {
-		return categoryId;
-	}
-
-	/**
-	 * @param categoryId the categoryId to set
-	 * @category accessor
-	 */
-	public void setCategoryId(long categoryId) {
-		this.categoryId = categoryId;
-	}
-
-	/**
-	 * @return the editFlag
-	 * @category accessor
-	 */
-	public long getEditFlag() {
-		return editFlag;
-	}
-
-	/**
-	 * @param editFlag the editFlag to set
-	 * @category accessor
-	 */
-	public void setEditFlag(long editFlag) {
-		this.editFlag = editFlag;
-	}
-
-	/**
 	 * @return the active
 	 * @category accessor
 	 */
-	public long getActive() {
+	public Active getActive() {
 		return active;
 	}
 
@@ -157,7 +139,7 @@ public class GenreItem {
 	 * @param active the active to set
 	 * @category accessor
 	 */
-	public void setActive(long active) {
+	public void setActive(Active active) {
 		this.active = active;
 	}
 

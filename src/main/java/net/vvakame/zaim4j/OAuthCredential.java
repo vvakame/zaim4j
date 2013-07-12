@@ -64,7 +64,7 @@ public class OAuthCredential implements Serializable {
 		 * @return new builder instance
 		 * @author vvakame
 		 */
-		public static Builder newBuild(OAuthConfiguration configuration) {
+		static Builder newBuild(OAuthConfiguration configuration) {
 			return new Builder(configuration);
 		}
 

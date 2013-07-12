@@ -5,6 +5,7 @@ import java.io.StringWriter;
 
 import net.vvakame.util.jsonpullparser.annotation.JsonKey;
 import net.vvakame.util.jsonpullparser.annotation.JsonModel;
+import net.vvakame.zaim4j.Active.ActiveConverter;
 import net.vvakame.zaim4j.MoneyMode.MoneyModeConverter;
 
 /**
@@ -16,6 +17,9 @@ public class CategoryItem {
 
 	@JsonKey
 	long id;
+
+	@JsonKey(converter = MoneyModeConverter.class)
+	MoneyMode mode;
 
 	@JsonKey
 	String name;
@@ -30,16 +34,10 @@ public class CategoryItem {
 	long budget;
 
 	@JsonKey
-	long editFlag;
-
-	@JsonKey(converter = MoneyModeConverter.class)
-	MoneyMode mode;
-
-	@JsonKey
 	long sort;
 
-	@JsonKey
-	long active;
+	@JsonKey(converter = ActiveConverter.class)
+	Active active;
 
 	@JsonKey
 	long parentCategoryId;
@@ -76,6 +74,22 @@ public class CategoryItem {
 	 */
 	public void setId(long id) {
 		this.id = id;
+	}
+
+	/**
+	 * @return the mode
+	 * @category accessor
+	 */
+	public MoneyMode getMode() {
+		return mode;
+	}
+
+	/**
+	 * @param mode the mode to set
+	 * @category accessor
+	 */
+	public void setMode(MoneyMode mode) {
+		this.mode = mode;
 	}
 
 	/**
@@ -143,38 +157,6 @@ public class CategoryItem {
 	}
 
 	/**
-	 * @return the editFlag
-	 * @category accessor
-	 */
-	public long getEditFlag() {
-		return editFlag;
-	}
-
-	/**
-	 * @param editFlag the editFlag to set
-	 * @category accessor
-	 */
-	public void setEditFlag(long editFlag) {
-		this.editFlag = editFlag;
-	}
-
-	/**
-	 * @return the mode
-	 * @category accessor
-	 */
-	public MoneyMode getMode() {
-		return mode;
-	}
-
-	/**
-	 * @param mode the mode to set
-	 * @category accessor
-	 */
-	public void setMode(MoneyMode mode) {
-		this.mode = mode;
-	}
-
-	/**
 	 * @return the sort
 	 * @category accessor
 	 */
@@ -194,7 +176,7 @@ public class CategoryItem {
 	 * @return the active
 	 * @category accessor
 	 */
-	public long getActive() {
+	public Active getActive() {
 		return active;
 	}
 
@@ -202,7 +184,7 @@ public class CategoryItem {
 	 * @param active the active to set
 	 * @category accessor
 	 */
-	public void setActive(long active) {
+	public void setActive(Active active) {
 		this.active = active;
 	}
 

@@ -144,6 +144,8 @@ public class HowToUse {
 		// see original document. https://dev.zaim.net/home/api?url=%2Fhome%2Fapi#money_get
 		{
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+			// TODO
+			@SuppressWarnings("deprecation")
 			MoneyPaymentInsertArgument argument =
 					new MoneyPaymentInsertArgument(101, 10103, 888, sdf.format(new Date()));
 			ZaimResult<MoneyPostInsertResponse> result =
@@ -251,6 +253,8 @@ public class HowToUse {
 		// see original document. https://dev.zaim.net/home/api?url=%2Fhome%2Fapi#money_get
 		{
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+			// TODO
+			@SuppressWarnings("deprecation")
 			MoneyPaymentInsertArgument argument =
 					new MoneyPaymentInsertArgument(101, 10103, 888, sdf.format(new Date()));
 			zaim.money().payment().insert(argument)

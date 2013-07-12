@@ -14,7 +14,7 @@ import net.vvakame.util.jsonpullparser.annotation.JsonModel;
 @JsonModel(decamelize = true, genToPackagePrivate = true, treatUnknownKeyAsError = true)
 public class OtherAccountListResponse {
 
-	@JsonKey("categories")
+	@JsonKey
 	List<OtherAccountItem> accounts;
 
 	@JsonKey
