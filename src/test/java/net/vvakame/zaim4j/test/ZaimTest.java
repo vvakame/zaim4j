@@ -246,9 +246,7 @@ public class ZaimTest {
 		ZaimResult<CategoryListResponse> result = zaim.category().list().execute();
 		assertThat(result.isSuccess(), is(true));
 		assertThat(result.getValue().getRequested(), not(0L));
-		if (result.getValue().getCategories() != null) {
-			assertThat(result.getValue().getCategories().size(), not(0));
-		}
+		assertThat(result.getValue().getCategories().size(), not(0));
 	}
 
 	/**
